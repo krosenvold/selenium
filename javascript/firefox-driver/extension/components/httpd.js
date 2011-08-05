@@ -39,6 +39,14 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+/*
+
+    Note: this is basically a copy of the mozilla httpd.js, but it is not the
+    latest version since that does not support firefox 3.6.
+
+    This version has been patched with the patc from https://bugzilla.mozilla.org/show_bug.cgi?id=469228
+    (A dirty patch since the patch was made for the ff 4.0 version)
+ */
 
 /*
  * An implementation of an HTTP server both as a loadable script and as an XPCOM
@@ -57,7 +65,7 @@ const CC = Components.Constructor;
 const PR_UINT32_MAX = Math.pow(2, 32) - 1;
 
 /** True if debugging output is enabled, false otherwise. */
-var DEBUG = false; // non-const *only* so tweakable in server tests
+var DEBUG = true; // non-const *only* so tweakable in server tests
 
 /** True if debugging output should be timestamped. */
 var DEBUG_TIMESTAMP = false; // non-const so tweakable in server tests
@@ -399,6 +407,19 @@ function nsHttpServer()
    * creation.
    */
   this._connections = {};
+
+  /**
+     * Flag for keep-alive behavior, true for default behavior, false for
+     * closing connections after the first response.
+     * Set by nsIHttpServer.keepAlive attribute.
+  */
+    this._defaultKeepAlive = true;
+
+   /**
+     * The number of seconds to keep idle persistent connections alive
+    */
+   this._defaultKeepAliveTimeout = 120;
+
 }
 nsHttpServer.prototype =
 {
@@ -441,14 +462,7 @@ nsHttpServer.prototype =
     {
       var conn = new Connection(input, output, this, socket.port, trans.port,
                                 connectionNumber);
-      var reader = new RequestReader(conn);
-
-      // XXX add request timeout functionality here!
-
-      // Note: must use main thread here, or we might get a GC that will cause
-      //       threadsafety assertions.  We really need to fix XPConnect so that
-      //       you can actually do things in multi-threaded JS.  :-(
-      input.asyncWait(reader, 0, 0, gThreadManager.mainThread);
+      conn.read();
     }
     catch (e)
     {
@@ -477,6 +491,14 @@ nsHttpServer.prototype =
   onStopListening: function(socket, status)
   {
     dumpn(">>> shutting down server on port " + socket.port);
+
+    // Close all idle connections now.
+    for each (var connection in this._connections)
+    {
+      if (connection.isIdle())
+        connection.close();
+    }
+
     this._socketClosed = true;
     if (!this._hasOpenConnections())
     {
@@ -698,6 +720,17 @@ nsHttpServer.prototype =
     return this._handler._setObjectState(k, v);
   },
 
+  //
+  // see nsIHttpServer.keepAlive
+  //
+  get keepAlive()
+  {
+    return this._defaultKeepAlive;
+  },
+  set keepAlive(doKeepAlive)
+  {
+    return this._defaultKeepAlive = doKeepAlive;
+  },
 
   // NSISUPPORTS
 
@@ -790,6 +823,31 @@ nsHttpServer.prototype =
     // Fire a pending server-stopped notification if it's our responsibility.
     if (!this._hasOpenConnections() && this._socketClosed)
       this._notifyStopped();
+     // Bug 508125: Add a GC here else we'll use gigabytes of memory running
+     // mochitests. We can't rely on xpcshell doing an automated GC, as that
+     // would interfere with testing GC stuff...
+    if (typeof gc === "function") gc();
+  },
+
+ /**
+   * Inform the server that the connection is currently in an idle state and
+   * may be closed when the server went down.
+   */
+  _connectionIdle: function(connection)
+  {
+    // If the server is down, close any now idle connections.
+    if (this._socketClosed)
+    {
+      connection.close();
+      return;
+    }
+
+    connection.persist();
+
+    // Bug 508125: Add a GC here else we'll use gigabytes of memory running
+    // mochitests. We can't rely on xpcshell doing an automated GC, as that
+    // would interfere with testing GC stuff...
+    if (typeof gc === "function") gc();
   },
 
   /**
@@ -1129,15 +1187,82 @@ function Connection(input, output, server, port, outgoingPort, number)
   this.request = null;
 
   /** State variables for debugging. */
-  this._closed = this._processed = false;
+  this._closed = false;
+
+  /**
+   * RequestReader may cache the port number here.  This is needed because when
+   * going thought ssltunnel, we update the Request-URL only for the first
+   * request, through we get knowledge of the actual target server port number.
+   * Following requests are not updated that way and are missing the port number
+   * that may lead to missmatch of the target virtual server identity.
+   *
+   * Default to standard HTTP port 80 to accept common hosts (the port number is
+   * not sent by clients when it is the default port number for a scheme, nor
+   * the scheme is sent by default).
+   *
+   * See also RequestReader._validateRequest method.
+   */
+  this._incomingPort = 80;
+
+  /**
+   * The current responses queue.  Each new response is pushed to this queue
+   * and shifted out when done.  This way we keep track of responses to process
+   * and let process request(s) sooner the previous response(s) were sent out.
+   */
+  this._responseQueue = [];
+
+  /**
+   * The current keep-alive timeout value.  Adjustable by Keep-alive: timeout
+   * header in requests and responses.  Units: seconds.
+   */
+  this._keepAliveTimeout = server._defaultKeepAliveTimeout;
+
+  /**
+   * Start the initial timeout, if no data are read on this connection within
+   * the keep alive timeout, then close this connection.
+   */
+  this.persist();
 }
 Connection.prototype =
 {
+  /** Create RequestReader instance and start reading from the socket */
+  read: function()
+  {
+    dumpn("*** read on connection " + this);
+    if (this._closed)
+      return;
+
+    var reader = new RequestReader(this);
+
+    // XXX add request timeout functionality here!
+
+    // Note: must use main thread here, or we might get a GC that will cause
+    //       threadsafety assertions.  We really need to fix XPConnect so that
+    //       you can actually do things in multi-threaded JS.  :-(
+    try
+    {
+      this.input.asyncWait(reader, 0, 0, gThreadManager.mainThread);
+    }
+    catch (e)
+    {
+      this.close();
+    }
+  },
+
   /** Closes this connection's input/output streams. */
   close: function()
   {
     dumpn("*** closing connection " + this.number +
           " on port " + this._outgoingPort);
+
+    if (this._closed)
+      return;
+
+    if (this._idleTimer)
+    {
+      this._idleTimer.cancel();
+      this._idleTimer = null;
+    }
 
     this.input.close();
     this.output.close();
@@ -1151,21 +1276,57 @@ Connection.prototype =
       server.stop(function() { /* not like we can do anything better */ });
   },
 
+  /** Let the connection be persistent for the keep-alive time */
+  persist: function()
+  {
+    // This method is called every time the connection gets to an idle state,
+    // i.e. has sent all queued responses out and doesn't process a request now.
+    if (this._idleTimer)
+    {
+      this._idleTimer.cancel();
+      this._idleTimer = null;
+    }
+
+    dumpn("*** persisting idle connection " + this +
+          " for " + this._keepAliveTimeout + " seconds");
+
+    this._idleTimer = Components.classes["@mozilla.org/timer;1"]
+                      .createInstance(Components.interfaces.nsITimer);
+    this._idleTimer.target = gThreadManager.mainThread;
+
+    var connection = this;
+    this._idleTimer.initWithCallback(function()
+    {
+      // We might get to an active state before the timeout occurred, then
+      // ignore it.  Timer will get rescheduled when connection gets back
+      // to the idle state.  This is simpler and more error-prone then canceling
+      // the timer whenever the connection becomes active again.
+      if (!connection.isIdle())
+        return;
+
+      dumpn("*** closing idle connection " + connection);
+      connection.close();
+    }, this._keepAliveTimeout * 1000, Ci.nsITimer.TYPE_ONE_SHOT);
+  },
+
   /**
    * Initiates processing of this connection, using the data in the given
-   * request.
+   * request.  Called by RequestReader._handleResponse after the request has
+   * been completely read from the socket.
    *
    * @param request : Request
    *   the request which should be processed
    */
   process: function(request)
   {
-    NS_ASSERT(!this._closed && !this._processed);
+    NS_ASSERT(!this._closed);
+    NS_ASSERT(request == this.request);
 
-    this._processed = true;
-
-    this.request = request;
     this.server._handler.handleResponse(this);
+
+    this.request = null;
+    if (this.isIdle())
+      this.server._connectionIdle(this);
   },
 
   /**
@@ -1180,11 +1341,85 @@ Connection.prototype =
    */
   processError: function(code, request)
   {
-    NS_ASSERT(!this._closed && !this._processed);
+    NS_ASSERT(!this._closed);
+    NS_ASSERT(request == this.request);
 
-    this._processed = true;
-    this.request = request;
     this.server._handler.handleError(code, this);
+
+    this.request = null;
+    if (this.isIdle())
+      this.server._connectionIdle(this);
+  },
+
+  /**
+   * Return true if the connection is currently not receiving nor sending.
+   * Include also !closed check to prevent invoike of _connectionIdle when
+   * it has already been closed.
+   */
+  isIdle: function()
+  {
+    return !this._responseQueue.length && !this.request && !this._closed;
+  },
+
+  /**
+   * Called by the response it self to add it to this connection response queue
+   * allowing processing of requests while responses weren't completely sent.
+   *
+   * @param response
+   *   Response to be added to the queue.  If there are more responses in the
+   *   queue already this one is blocked from sending.  Shifting all responses
+   *   sitting before this one from the queue will unblock it.
+   */
+  queueResponse: function(response)
+  {
+    dumpn("*** queueResponse on connection " + this);
+    if (this._responseQueue.length)
+      response._onBlockWrite();
+    this._responseQueue.push(response);
+  },
+
+  /**
+   * Called by the response it self after has been completely sent out
+   * to remove it from the queue and allow the following response in the queue
+   * to start sending out.
+   *
+   * @param response
+   *   The response to shift from the queue.  It must be the first response
+   *   in the queue.
+   */
+  responseDone: function(response)
+  {
+    dumpn("*** responseDone on connection " + this);
+    NS_ASSERT(this._responseQueue[0] == response,
+              "Shifting response not first in the queue??");
+    this._responseQueue.shift();
+
+    if (this._responseQueue.length)
+      this._responseQueue[0]._onUnblockWrite();
+
+    if (this.isIdle())
+      this.server._connectionIdle(this);
+  },
+
+  /**
+   * Removes the request from the queue.
+   *
+   * @param response
+   *   Response that has been queued but no data has ever been written by it
+   *   to the connection and an alternative response has been created to replace
+   *   this one satisfying the original request.
+   */
+  discardResponse: function(response)
+  {
+    dumpn("*** discardResponse on connection " + this);
+
+    var index = this._responseQueue.indexOf(response);
+    NS_ASSERT(index != -1);
+
+    if (index == 0)
+      this.responseDone(response);
+    else
+      this._responseQueue.splice(index, 1);
   },
 
   /** Converts this to a string for debugging purposes. */
@@ -1291,13 +1526,17 @@ RequestReader.prototype =
     if (!data)
       return;
 
+    // Set the request on the connection to indicate something is being
+    // read on it.
+    this._connection.request = this._metadata;
+
     try
     {
       data.appendBytes(readBytes(input, input.available()));
     }
     catch (e)
     {
-      if (streamClosed(e))
+      if (streamClosed(e) && !this._connection._closed)
       {
         dumpn("*** WARNING: unexpected error when reading from socket; will " +
               "be treated as if the input stream had been closed");
@@ -1534,7 +1773,10 @@ RequestReader.prototype =
         // the HTTPS case requires a tunnel/proxy and thus requires that the
         // requested URI be absolute (and thus contain the necessary
         // information), let's assume HTTP will prevail and use that.
-        port = +port || 80;
+        // _connection._incomingPort is defaulted to 80 (HTTP) but can be
+        // overwritten by the first tunneled request with a full specified URL.
+        // See also RequestReader._parseRequestLine method.
+        port = +port || this._connection._incomingPort;
 
         var scheme = identity.getScheme(host, port);
         if (!scheme)
@@ -1701,6 +1943,10 @@ RequestReader.prototype =
 
       if (!serverIdentity.has(scheme, host, port) || fullPath.charAt(0) != "/")
         throw HTTP_400;
+
+      // Remember the port number we have determined.  Subsequest requests
+      // might not contain this information.
+      this._connection._incomingPort = port;
     }
 
     var splitter = fullPath.indexOf("?");
@@ -2235,6 +2481,13 @@ ServerHandler.prototype =
   {
     var request = connection.request;
     var response = new Response(connection);
+
+    // Now start reading from the connection again regardless the current
+    // response processing state.  The following request will be read
+    // and a response will be processed but will be blocked from sending to
+    // the connection until the current response finishes being completely
+    // sent out.
+    connection.read();
 
     var path = request.path;
     dumpn("*** path == " + path);
@@ -3019,6 +3272,13 @@ ServerHandler.prototype =
   {
     var response = new Response(connection);
 
+    // Now start reading from the connection again regardless the current
+    // response processing state.  The following request will be read
+    // and a response will be processed but will be blocked from sending to
+    // the connection until the current response finishes being completely
+    // sent out.
+    connection.read();
+
     dumpn("*** error in request: " + errorCode);
 
     this._handleError(errorCode, new Request(connection.port), response);
@@ -3393,6 +3653,20 @@ function Response(connection)
   this._connection = connection;
 
   /**
+   * If true, close the connection at after the response has been sent out.
+   * Can be set to true whenever before end() method has been called.
+   * If no connection header was present then default to "keep-alive" for
+   * HTTP/1.1 and "close" for HTTP/1.0.
+   */
+  var req = connection.request;
+  this._closeConnection = !connection.server._defaultKeepAlive ||
+                          (req.hasHeader("Connection")
+                          ? req.getHeader("Connection").toLowerCase() == "close"
+                          : req._httpVersion.equals(nsHttpVersion.HTTP_1_0));
+
+    dump("Closconnection" + this._closeConnection)
+
+  /**
    * The HTTP version of this response; defaults to 1.1 if not set by the
    * handler.
    */
@@ -3453,6 +3727,12 @@ function Response(connection)
   this._processAsync = false;
 
   /**
+   * Flag indicating use of the chunked encoding to send the asynchronously
+   * generated content.  Set as an argument to processAsync method.
+   */
+  this._chunked = false;
+
+  /**
    * True iff finish() has been called on this, signaling that no more changes
    * to this may be made.
    */
@@ -3464,6 +3744,18 @@ function Response(connection)
    * send arbitrary data in response, even non-HTTP responses).
    */
   this._powerSeized = false;
+
+  /**
+   * Gets set to true if this is not the first response pending on the current
+   * connection.  This flag is used to block this response from writting when
+   * there are unfinished responses outstanding on the same connection.
+   */
+  this._writeBlocked = false;
+
+  /**
+   * Prevents ambigous push to the connection response queue.
+   */
+  this._queued = false;
 }
 Response.prototype =
 {
@@ -3574,6 +3866,7 @@ Response.prototype =
 
     dumpn("*** processing connection " + this._connection.number + " async");
     this._processAsync = true;
+    this._chunked = true;
 
     /*
      * Either the bodyOutputStream getter or this method is responsible for
@@ -3624,6 +3917,7 @@ Response.prototype =
     }
 
     this._powerSeized = true;
+    this._closeConnection = true;
     if (this._bodyOutputStream)
       this._startAsyncProcessor();
   },
@@ -3640,6 +3934,12 @@ Response.prototype =
 
     dumpn("*** finishing connection " + this._connection.number);
     this._startAsyncProcessor(); // in case bodyOutputStream was never accessed
+
+    // If we are using chunked encoding then ensure body streams are present
+    // to send the EOF chunk, for what WriteThroughCopier is responsible.
+    if (this._chunked)
+      this.bodyOutputStream;
+
     if (this._bodyOutputStream)
       this._bodyOutputStream.close();
     this._finished = true;
@@ -3720,7 +4020,18 @@ Response.prototype =
    * Determines whether this response may be abandoned in favor of a newly
    * constructed response.  A response may be abandoned only if it is not being
    * sent asynchronously and if raw control over it has not been taken from the
-   * server.
+   * server or it was not blocked from write (what indicates the response has
+   * already been queued).
+   *
+   * XXX In case of _writeBlocked == true we could unqueue this response and
+   *     return false from this method to save connection close.  It would mean
+   *     to change behavior and consumer of abort() method to really abort only
+   *     when data has been sent and if not, tell the consumer it may continue
+   *     as there were no data.
+   *     In other words: we cannot return false here when _writeBlocked is true
+   *     (i.e. response is in the connection queue) because our end() method
+   *     would have never got called (the place where we shift the response
+   *     back).  I will fix this in a followup patch.
    *
    * @returns boolean
    *   true iff no data has been written to the network
@@ -3728,7 +4039,7 @@ Response.prototype =
   partiallySent: function()
   {
     dumpn("*** partiallySent()");
-    return this._processAsync || this._powerSeized;
+    return this._processAsync || this._powerSeized || this._writeBlocked;
   },
 
   /**
@@ -3771,6 +4082,8 @@ Response.prototype =
   {
     dumpn("*** abort(<" + e + ">)");
 
+    this._closeConnection = true;
+
     // This response will be ended by the processor if one was created.
     var copier = this._asyncCopier;
     if (copier)
@@ -3810,15 +4123,44 @@ Response.prototype =
   {
     NS_ASSERT(!this._ended, "ending this response twice?!?!");
 
-    this._connection.close();
+    if (this._closeConnection)
+      this._connection.close();
+
     if (this._bodyOutputStream)
       this._bodyOutputStream.close();
 
     this._finished = true;
     this._ended = true;
+    if (this._writeBlocked)
+      this._connection.discardResponse(this);
+    else
+      this._connection.responseDone(this);
   },
 
   // PRIVATE IMPLEMENTATION
+
+  /**
+   * This response is not the first one in the connection response queue,
+   * it will be blocked from writting.  Connection will unblock this response
+   * by calling _onUnblockWrite() method on it when it became the first in the
+   * queue.
+   */
+  _onBlockWrite: function()
+  {
+    NS_ASSERT(!this._asyncCopier);
+    dumpn("*** _onBlockWrite");
+    this._writeBlocked = true;
+  },
+
+  /**
+   * This response is now first in the queue, start sending it out now.
+   */
+  _onUnblockWrite: function()
+  {
+    dumpn("*** _onUnblockWrite");
+    this._writeBlocked = false;
+    this._startAsyncProcessor();
+  },
 
   /**
    * Sends the status line and headers of this response if they haven't been
@@ -3836,6 +4178,20 @@ Response.prototype =
     if (this._asyncCopier || this._ended)
     {
       dumpn("*** ignoring second call to _startAsyncProcessor");
+      return;
+    }
+
+    // Push this response to the connection response queue.  Response will
+    // be shifted from the queue in end() method.
+    if (!this._queued)
+    {
+      this._queued = true;
+      this._connection.queueResponse(this);
+    }
+
+    if (this._writeBlocked)
+    {
+      dumpn("*** response is blocked from writting");
       return;
     }
 
@@ -3873,7 +4229,39 @@ Response.prototype =
     // header post-processing
 
     var headers = this._headers;
-    headers.setHeader("Connection", "close", false);
+    if (headers.hasHeader("Connection"))
+    {
+      // If "Connection: close" header had been manually set on the response,
+      // then set our _closeConnection flag, otherwise leave it as is.
+      this._closeConnection = this._closeConnection ||
+        (headers.getHeader("Connection").toLowerCase() == "close");
+    }
+    else
+    {
+      // There is no Connection header set on the response, set it by state
+      // of the _closeConnection flag.
+      var connectionHeaderValue = (this._closeConnection)
+                                ? "close"
+                                : "keep-alive";
+      headers.setHeader("Connection", connectionHeaderValue, false);
+    }
+
+    if (headers.hasHeader("Keep-alive"))
+    {
+      // Read the Keep-alive header and set the timeout according it.
+      var keepAliveTimeout = headers.getHeader("Keep-alive")
+                             .match(/timeout\s*=\s*(\d+)/);
+      if (keepAliveTimeout)
+        this._connection._keepAliveTimeout = parseInt(keepAliveTimeout[1]);
+    }
+    else if (!this._closeConnection)
+    {
+      // Add the keep alive header.
+      headers.setHeader("Keep-alive",
+                        "timeout=" + this._connection._keepAliveTimeout,
+                        false);
+    }
+
     headers.setHeader("Server", "httpd.js", false);
     if (!headers.hasHeader("Date"))
       headers.setHeader("Date", toDateString(Date.now()), false);
@@ -3889,10 +4277,30 @@ Response.prototype =
       dumpn("*** non-async response, set Content-Length");
 
       var bodyStream = this._bodyInputStream;
-      var avail = bodyStream ? bodyStream.available() : 0;
+      try
+      {
+        var avail = bodyStream ? bodyStream.available() : 0;
+      }
+      catch (e)
+      {
+        // If nothing has been written to the body stream and the response
+        // was not processed asynchronously nor power was seized from it
+        // the _bodyOutputStream has already been closed in complete() method
+        // and thus _bodyInputStream.available(), as it is the other side of
+        // a pipe, throws NS_BASE_STREAM_CLOSED.
+        // See also nsPipeInputStream::Available implementation.
+        if (!streamClosed(e))
+          throw e;
+
+        avail = 0;
+      }
 
       // XXX assumes stream will always report the full amount of data available
       headers.setHeader("Content-Length", "" + avail, false);
+    }
+    else if (this._chunked)
+    {
+      headers.setHeader("Transfer-Encoding", "chunked", false);
     }
 
 
@@ -4023,7 +4431,7 @@ Response.prototype =
     dumpn("*** starting async copier of body data...");
     this._asyncCopier =
       new WriteThroughCopier(this._bodyInputStream, this._connection.output,
-                            copyObserver, null);
+                            copyObserver, null, this._chunked);
   },
 
   /** Ensures that this hasn't been ended. */
@@ -4074,7 +4482,7 @@ function wouldBlock(e)
  * @throws NS_ERROR_NULL_POINTER
  *   if source, sink, or observer are null
  */
-function WriteThroughCopier(source, sink, observer, context)
+function WriteThroughCopier(source, sink, observer, context, chunked)
 {
   if (!source || !sink || !observer)
     throw Cr.NS_ERROR_NULL_POINTER;
@@ -4090,6 +4498,9 @@ function WriteThroughCopier(source, sink, observer, context)
 
   /** Context for the observer watching this. */
   this._context = context;
+
+  /** Forces use of chunked encoding on the data */
+  this._chunked = chunked;
 
   /**
    * True iff this is currently being canceled (cancel has been called, the
@@ -4199,7 +4610,20 @@ WriteThroughCopier.prototype =
       {
         var data = input.readByteArray(bytesWanted);
         bytesConsumed = data.length;
-        this._pendingData.push(String.fromCharCode.apply(String, data));
+
+        if (this._chunked)
+        {
+          // Apply chunked encoding here
+          data = bytesConsumed.toString(16).toUpperCase()
+               + "\r\n"
+               + String.fromCharCode.apply(String, data)
+               + "\r\n";
+          this._pendingData.push(data);
+        }
+        else
+        {
+          this._pendingData.push(String.fromCharCode.apply(String, data));
+        }
       }
 
       dumpn("*** " + bytesConsumed + " bytes read");
@@ -4467,6 +4891,21 @@ WriteThroughCopier.prototype =
     dumpn("*** _doneReadingSource(0x" + e.toString(16) + ")");
 
     this._finishSource(e);
+
+    if (this._chunked)
+    {
+      // Write the final EOF chunk
+      dumpn("*** _doneReadingSource - write EOF chunk");
+      this._chunked = false;
+      this._pendingData.push("0\r\n\r\n");
+      try
+      {
+        this._waitToWriteData();
+        return;
+      }
+      catch (e) {}
+    }
+
     if (this._pendingData.length === 0)
       this._sink = null;
     else
