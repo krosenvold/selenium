@@ -4242,14 +4242,14 @@ Response.prototype =
       // of the _closeConnection flag.
       var connectionHeaderValue = (this._closeConnection)
                                 ? "close"
-                                : "keep-alive";
+                                : "Keep-Alive";
       headers.setHeader("Connection", connectionHeaderValue, false);
     }
 
-    if (headers.hasHeader("Keep-alive"))
+    if (headers.hasHeader("Keep-Alive"))
     {
       // Read the Keep-alive header and set the timeout according it.
-      var keepAliveTimeout = headers.getHeader("Keep-alive")
+      var keepAliveTimeout = headers.getHeader("Keep-Alive")
                              .match(/timeout\s*=\s*(\d+)/);
       if (keepAliveTimeout)
         this._connection._keepAliveTimeout = parseInt(keepAliveTimeout[1]);
@@ -4257,7 +4257,7 @@ Response.prototype =
     else if (!this._closeConnection)
     {
       // Add the keep alive header.
-      headers.setHeader("Keep-alive",
+      headers.setHeader("Keep-Alive",
                         "timeout=" + this._connection._keepAliveTimeout,
                         false);
     }
