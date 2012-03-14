@@ -37,7 +37,10 @@ import org.openqa.jetty.http.HttpContext;
 import org.openqa.jetty.http.SecurityConstraint;
 import org.openqa.jetty.http.SocketListener;
 import org.openqa.jetty.http.handler.SecurityHandler;
-import org.openqa.jetty.jetty.Server;
+import org.seleniumhq.jetty7.server.Server;
+import org.seleniumhq.jetty7.server.bio.SocketConnector;
+import org.seleniumhq.jetty7.server.handler.ContextHandler;
+import org.seleniumhq.jetty7.servlet.ServletContextHandler;
 import org.openqa.jetty.jetty.servlet.ServletHandler;
 import org.openqa.jetty.util.MultiException;
 import org.openqa.selenium.browserlaunchers.Sleeper;
@@ -53,6 +56,7 @@ import org.openqa.selenium.server.htmlrunner.HTMLResultsListener;
 import org.openqa.selenium.server.htmlrunner.SeleniumHTMLRunnerResultsHandler;
 import org.openqa.selenium.server.htmlrunner.SingleTestSuiteResourceHandler;
 import org.openqa.selenium.server.log.LoggingManager;
+import org.seleniumhq.jetty7.servlet.ServletHolder;
 
 /**
  * Provides a server that can launch/terminate browsers and can receive remote Selenium commands
@@ -294,14 +298,14 @@ public class SeleniumServer implements SslCertificateGenerator {
   }
 
   protected void createJettyServer(boolean slowResources) {
-    final SocketListener socketListener;
+    final SocketConnector socketListener;
 
     server = new Server();
-    socketListener = new SocketListener();
-    socketListener.setMaxIdleTimeMs(60000);
-    socketListener.setMaxThreads(jettyThreads);
+    socketListener = new SocketConnector();
+    socketListener.setLowResourcesMaxIdleTime(60000);
+//    socketListener.setMaxThreads(jettyThreads);
     socketListener.setPort(getPort());
-    server.addListener(socketListener);
+    server.addConnector(socketListener);
     assembleHandlers(slowResources, configuration);
   }
 
@@ -327,9 +331,11 @@ public class SeleniumServer implements SslCertificateGenerator {
 
 
   private void assembleHandlers(boolean slowResources, RemoteControlConfiguration configuration) {
-    server.addContext(createRootContextWithProxyHandler(configuration));
 
-    HttpContext context = new HttpContext();
+    ServletContextHandler rootContextWithProxyHandler = createRootContextWithProxyHandler(configuration);
+    server.setHandler(rootContextWithProxyHandler);
+
+/*    HttpContext context = new HttpContext();
     context.setContextPath("/selenium-server");
     context.setMimeMapping("xhtml", "application/xhtml+xml");
 
@@ -340,14 +346,17 @@ public class SeleniumServer implements SslCertificateGenerator {
     postResultsHandler = new SeleniumHTMLRunnerResultsHandler();
     context.addHandler(postResultsHandler);
     context.addHandler(new CachedContentTestHandler());
-    server.addContext(context);
+    server.addContext(context);                        */
 
     // Both the selenium and webdriver contexts must be able to share sessions
     DefaultDriverSessions webdriverSessions = new DefaultDriverSessions();
 
-    server.addContext(createDriverContextWithSeleniumDriverResourceHandler(
-        context, webdriverSessions));
-    server.addContext(createWebDriverRemoteContext(webdriverSessions));
+//    server.addContext(createDriverContextWithSeleniumDriverResourceHandler(
+//        context, webdriverSessions));
+    rootContextWithProxyHandler.setAttribute(DriverServlet.SESSIONS_KEY, webdriverSessions);
+    rootContextWithProxyHandler.addServlet(createWebDriverRemoteContext(webdriverSessions), "/wd/hub/*");
+
+   // server.addContext(createWebDriverRemoteContext(webdriverSessions));
   }
 
   private HttpContext createDriverContextWithSeleniumDriverResourceHandler(
@@ -360,19 +369,14 @@ public class SeleniumServer implements SslCertificateGenerator {
     return driverContext;
   }
 
-  private HttpContext createWebDriverRemoteContext(DriverSessions webdrDriverSessions) {
-    HttpContext webdriverContext = new HttpContext();
-    webdriverContext.setAttribute(DriverServlet.SESSIONS_KEY, webdrDriverSessions);
-    webdriverContext.setContextPath("/wd");
-    ServletHandler handler = new ServletHandler();
-    handler.addServlet("WebDriver remote server", "/hub/*", DriverServlet.class.getName());
-    webdriverContext.addHandler(handler);
+  private ServletHolder createWebDriverRemoteContext(DriverSessions webdrDriverSessions) {
+    ServletHolder servletHolder = new ServletHolder("WebDriver remote server", DriverServlet.class);
 
     LOGGER.info(format("RemoteWebDriver instances should connect to: http://%s:%d/wd/hub",
         networkUtils.getPrivateLocalAddress(), getPort())); // todo: This is still buggy because it
                                                             // should resolve to external port
 
-    return webdriverContext;
+    return servletHolder;
   }
 
   private void addStaticContentHandler(boolean slowResources,
@@ -407,16 +411,16 @@ public class SeleniumServer implements SslCertificateGenerator {
     context.addHandler(sh);
   }
 
-  protected HttpContext createRootContextWithProxyHandler(RemoteControlConfiguration configuration) {
-    HttpContext root;
-
-    root = new HttpContext();
+  protected ServletContextHandler createRootContextWithProxyHandler(RemoteControlConfiguration configuration) {
+    ServletContextHandler root = new ServletContextHandler(ServletContextHandler.SESSIONS);
     root.setContextPath("/");
-    proxyHandler = makeProxyHandler(configuration);
+    server.setHandler(root);
+
+ //   proxyHandler = makeProxyHandler(configuration);
 
     // see docs for the lock object for information on this and why it is IMPORTANT!
-    proxyHandler.setShutdownLock(shutdownLock);
-    root.addHandler(proxyHandler);
+//    proxyHandler.setShutdownLock(shutdownLock);
+  //  root.addHandler(proxyHandler);
     return root;
   }
 
@@ -425,7 +429,7 @@ public class SeleniumServer implements SslCertificateGenerator {
    * sendToRCAndForget for more info)
    */
   public void generateSSLCertsForLoggingHosts() {
-    proxyHandler.generateSSLCertsForLoggingHosts(server);
+   //  proxyHandler.generateSSLCertsForLoggingHosts(server);
   }
 
   protected ProxyHandler makeProxyHandler(RemoteControlConfiguration configuration) {

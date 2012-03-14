@@ -100,7 +100,7 @@ public class SelfRegisteringRemote {
 
     server = new SeleniumServer(nodeConfig.getRemoteControlConfiguration());
 
-    Server jetty = server.getServer();
+    org.seleniumhq.jetty7.server.Server jetty = server.getServer();
 
     String servletsStr = (String) nodeConfig.getConfiguration().get(GridNodeConfiguration.SERVLETS);
     if (servletsStr != null) {
@@ -123,7 +123,7 @@ public class SelfRegisteringRemote {
           }
         }
         extra.addHandler(handler);
-        jetty.addContext(extra);
+        //jetty.addContext(extra);
       }
     }
 

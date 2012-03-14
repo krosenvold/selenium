@@ -67,6 +67,7 @@ java_library(name = "base",
     "//java/server/src/cybervillains",
     "//java/server/src/org/openqa/selenium/remote/server",
     "//java/server/src/org/openqa/jetty",
-    "//third_party/java/servlet-api"
+    "//third_party/java/servlet-api",
+    "//third_party/java/jetty"
   ])
 
