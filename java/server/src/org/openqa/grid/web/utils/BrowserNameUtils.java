@@ -19,6 +19,7 @@ package org.openqa.grid.web.utils;
 
 import com.google.common.collect.Maps;
 
+import org.openqa.grid.internal.utils.ResourceLoader;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.BrowserType;
@@ -114,9 +115,7 @@ public class BrowserNameUtils {
    */
   public static String getConsoleIconPath(DesiredCapabilities cap, Registry registry) {
     String name = consoleIconName(cap, registry);
-    InputStream in =
-        Thread.currentThread().getContextClassLoader()
-            .getResourceAsStream("images/" + name + ".png");
+    InputStream in = ResourceLoader.load("images/" + name + ".png");
     if (in == null) {
       return null;
     } else {

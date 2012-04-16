@@ -20,6 +20,7 @@ package org.openqa.grid.common;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openqa.grid.common.exception.GridConfigurationException;
+import org.openqa.grid.internal.utils.ResourceLoader;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -39,7 +40,7 @@ public class JSONConfigurationUtils {
    * @throws JSONException
    */
   public static JSONObject loadJSON(String resource) {
-    InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+    InputStream in = ResourceLoader.load(resource);
 
     if (in == null) {
       try {

@@ -19,6 +19,8 @@ package org.openqa.grid.web.servlet;
 
 import com.google.common.io.ByteStreams;
 
+import org.openqa.grid.internal.utils.ResourceLoader;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -45,9 +47,10 @@ public class ResourceServlet extends HttpServlet {
   protected void process(HttpServletRequest request, HttpServletResponse response)
       throws IOException {
     String resource = request.getPathInfo().replace(request.getServletPath(), "");
-    if (resource.startsWith("/"))
+    if (resource.startsWith("/")) {
       resource = resource.replaceFirst("/", "");
-    InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+    }
+    InputStream in = ResourceLoader.load(resource);
     if (in == null) {
       throw new Error("Cannot find resource " + resource);
     }

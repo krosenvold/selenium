@@ -17,6 +17,8 @@ limitations under the License.
 
 package org.openqa.grid.common;
 
+import org.openqa.grid.internal.utils.ResourceLoader;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -93,7 +95,7 @@ public class GridDocHelper {
   }
 
   private static Properties load(String resource) {
-    InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+    InputStream in = ResourceLoader.load(resource);
     Properties p = new Properties();
     if (in != null) {
       try {

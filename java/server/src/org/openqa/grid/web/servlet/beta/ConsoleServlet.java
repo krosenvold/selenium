@@ -18,6 +18,7 @@ import org.openqa.grid.internal.Registry;
 import org.openqa.grid.internal.RemoteProxy;
 import org.openqa.grid.internal.utils.GridHubConfiguration;
 import org.openqa.grid.internal.utils.HtmlRenderer;
+import org.openqa.grid.internal.utils.ResourceLoader;
 import org.openqa.grid.web.servlet.RegistryBasedServlet;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -291,8 +292,7 @@ public class ConsoleServlet extends RegistryBasedServlet {
   private void getVersion() {
     final Properties p = new Properties();
 
-    InputStream stream =
-        Thread.currentThread().getContextClassLoader().getResourceAsStream("VERSION.txt");
+    InputStream stream = ResourceLoader.load("VERSION.txt");
     if (stream == null) {
       log.severe("Couldn't determine version number");
       return;

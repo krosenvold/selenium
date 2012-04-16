@@ -155,7 +155,7 @@ public class GridHubConfiguration {
   }
 
   public void loadDefault() {
-    loadFromJSON("defaults/DefaultHub.json");
+    loadFromJSON("/org/openqa/grid/common/defaults/DefaultHub.json");
   }
 
   public void loadFromCommandLine(String[] args) {
@@ -211,7 +211,7 @@ public class GridHubConfiguration {
    * @param resource /grid_configuration.yml for instance
    */
   public void loadFromGridYml(String resource) {
-    InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+    InputStream in = ResourceLoader.load(resource);
 
     if (in == null) {
       try {

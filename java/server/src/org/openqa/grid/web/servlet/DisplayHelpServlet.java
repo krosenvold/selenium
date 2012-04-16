@@ -19,6 +19,8 @@ package org.openqa.grid.web.servlet;
 
 import com.google.common.io.ByteStreams;
 
+import org.openqa.grid.internal.utils.ResourceLoader;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,8 +93,7 @@ public class DisplayHelpServlet extends HttpServlet {
   private void getVersion() {
     final Properties p = new Properties();
 
-    InputStream stream =
-        Thread.currentThread().getContextClassLoader().getResourceAsStream("VERSION.txt");
+    InputStream stream = ResourceLoader.load("VERSION.txt");
     if (stream == null) {
       log.severe("Couldn't determine version number");
       return;
