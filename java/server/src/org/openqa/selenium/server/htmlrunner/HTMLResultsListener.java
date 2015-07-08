@@ -18,5 +18,5 @@
 package org.openqa.selenium.server.htmlrunner;
 
 public interface HTMLResultsListener {
-  public void processResults(HTMLTestResults results);
+  void processResults(HTMLTestResults results);
 }

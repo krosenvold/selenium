@@ -169,11 +169,7 @@ public class JsonToBeanConverter {
     if (fromJson != null) {
       try {
         return (T) fromJson.invoke(null, source.toString());
-      } catch (IllegalArgumentException e) {
-        throw new WebDriverException(e);
-      } catch (IllegalAccessException e) {
-        throw new WebDriverException(e);
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
         throw new WebDriverException(e);
       }
     }
@@ -218,9 +214,7 @@ public class JsonToBeanConverter {
   private Method getMethod(Class<?> clazz, String methodName) {
     try {
       return clazz.getMethod(methodName, String.class);
-    } catch (SecurityException e) {
-      // fall through
-    } catch (NoSuchMethodException e) {
+    } catch (SecurityException | NoSuchMethodException e) {
       // fall through
     }
 
@@ -297,11 +291,7 @@ public class JsonToBeanConverter {
           value = null;
         }
         write.invoke(t, convert(type, value, depth + 1));
-      } catch (IllegalArgumentException e) {
-        throw propertyWriteException(property, value, type, e);
-      } catch (IllegalAccessException e) {
-        throw propertyWriteException(property, value, type, e);
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
         throw propertyWriteException(property, value, type, e);
       }
     }
@@ -312,9 +302,7 @@ public class JsonToBeanConverter {
   private <T> T newInstance(Class<T> clazz) {
     try {
       return clazz.newInstance();
-    } catch (InstantiationException e) {
-      throw new WebDriverException(e);
-    } catch (IllegalAccessException e) {
+    } catch (InstantiationException | IllegalAccessException e) {
       throw new WebDriverException(e);
     }
   }

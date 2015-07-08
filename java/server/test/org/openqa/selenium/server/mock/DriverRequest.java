@@ -38,7 +38,7 @@ public class DriverRequest extends AsyncHttpRequest {
       int timeoutInMillis) {
     DriverRequest request = new DriverRequest();
     request.cmd = cmd;
-    StringBuffer query = new StringBuffer(url);
+    StringBuilder query = new StringBuilder(url);
     query.append('?');
     query.append(cmd.getCommandURLString());
     if (sessionId != null) {

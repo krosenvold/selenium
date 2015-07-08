@@ -207,7 +207,7 @@ public class DefaultRemoteCommand implements RemoteCommand {
 
   private static String parseJSONString(String inputLine, int[] hackToPassByReference) {
     int index = hackToPassByReference[0];
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     boolean finished = false;
     for (; index < inputLine.length(); index++) {
       char c = inputLine.charAt(index);

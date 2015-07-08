@@ -24,7 +24,6 @@ import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -147,8 +146,6 @@ public class PortProber {
         return true;
       } catch (ConnectException e) {
         // Ignore this
-      } catch (UnknownHostException e) {
-        throw new RuntimeException(e);
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

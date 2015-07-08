@@ -34,10 +34,8 @@ public class ObjectStateAssumptionsTest extends JUnit4TestBase {
       variousMethodCallsToCheckAssumptions();
     } catch (NullPointerException npe) {
       throw new IllegalStateException("Assumptions broken for a fresh WebDriver instance", npe);
-    } catch (WebDriverException e) {
+    } catch (WebDriverException | UnsupportedOperationException e) {
       // this is fine.
-    } catch (UnsupportedOperationException e) {
-      // This is okay too.
     }
   }
 

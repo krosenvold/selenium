@@ -69,7 +69,7 @@ public class UploadFileHandler implements HttpHandler {
   }
 
   private Map<String, String> splitHeaders(String readHeaders) {
-    ImmutableMap.Builder<String, String> headersBuilder = new ImmutableMap.Builder<String, String>();
+    ImmutableMap.Builder<String, String> headersBuilder = new ImmutableMap.Builder<>();
     String[] headers = readHeaders.split("\r\n");
     for (String headerLine : headers) {
       int index = headerLine.indexOf(':');
@@ -84,7 +84,7 @@ public class UploadFileHandler implements HttpHandler {
   }
 
   private Map<String, String> extractFields(String contentTypeHeader) {
-    ImmutableMap.Builder<String, String> fieldsBuilder = new ImmutableMap.Builder<String, String>();
+    ImmutableMap.Builder<String, String> fieldsBuilder = new ImmutableMap.Builder<>();
     String[] contentTypeHeaderParts = contentTypeHeader.split("[;,]");
     for (String contentTypeHeaderPart : contentTypeHeaderParts) {
       String[] kv = contentTypeHeaderPart.split("=");

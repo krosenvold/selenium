@@ -664,7 +664,7 @@ public class WindowsProxyManager {
     PROXY_TYPE_AUTO_DETECT,
     INTERNET_PER_CONN_PROXY_SERVER,
     INTERNET_PER_CONN_PROXY_BYPASS,
-    INTERNET_PER_CONN_AUTOCONFIG_URL;
+    INTERNET_PER_CONN_AUTOCONFIG_URL
   }
 
   private static class HudsuckrSettings {

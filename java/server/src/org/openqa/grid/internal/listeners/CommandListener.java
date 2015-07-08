@@ -37,8 +37,8 @@ public interface CommandListener {
    * @param request
    * @param response
    */
-  public void beforeCommand(TestSession session, HttpServletRequest request,
-      HttpServletResponse response);
+  void beforeCommand(TestSession session, HttpServletRequest request,
+                     HttpServletResponse response);
 
   /**
    * Executed just before the forwards returns.
@@ -49,7 +49,7 @@ public interface CommandListener {
    * @param request
    * @param response
    */
-  public void afterCommand(TestSession session, HttpServletRequest request,
-      HttpServletResponse response);
+  void afterCommand(TestSession session, HttpServletRequest request,
+                    HttpServletResponse response);
 
 }

@@ -420,12 +420,12 @@ public class WindowsUtils {
 
   public static boolean isRegExeVersion1() {
     if (regVersion1 != null) {
-      return regVersion1.booleanValue();
+      return regVersion1;
     }
 
     String output = executeCommand(findReg(), "/?");
-    boolean version1 = output.indexOf("version 1.0") != -1;
-    regVersion1 = Boolean.valueOf(version1);
+    boolean version1 = output.contains("version 1.0");
+    regVersion1 = version1;
     return version1;
   }
 

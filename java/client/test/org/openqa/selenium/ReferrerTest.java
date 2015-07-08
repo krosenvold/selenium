@@ -456,9 +456,7 @@ public class ReferrerTest extends JUnit4TestBase {
       try {
         server.start();
         new UrlChecker().waitUntilAvailable(10, TimeUnit.SECONDS, new URL(getBaseUrl()));
-      } catch (UrlChecker.TimeoutException e) {
-        throw new RuntimeException(e);
-      } catch (MalformedURLException  e) {
+      } catch (UrlChecker.TimeoutException | MalformedURLException e) {
         throw new RuntimeException(e);
       }
     }

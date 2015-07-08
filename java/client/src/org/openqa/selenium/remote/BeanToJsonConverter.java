@@ -182,11 +182,7 @@ public class BeanToJsonConverter {
     if (toMap != null) {
       try {
         return convertObject(toMap.invoke(toConvert), maxDepth - 1);
-      } catch (IllegalArgumentException e) {
-        throw new WebDriverException(e);
-      } catch (IllegalAccessException e) {
-        throw new WebDriverException(e);
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
         throw new WebDriverException(e);
       }
     }
@@ -198,11 +194,7 @@ public class BeanToJsonConverter {
     if (toList != null) {
       try {
         return convertObject(toList.invoke(toConvert), maxDepth - 1);
-      } catch (IllegalArgumentException e) {
-        throw new WebDriverException(e);
-      } catch (IllegalAccessException e) {
-        throw new WebDriverException(e);
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
         throw new WebDriverException(e);
       }
     }
@@ -220,11 +212,7 @@ public class BeanToJsonConverter {
             return new JsonPrimitive((String) res);
           }
         }
-      } catch (IllegalArgumentException e) {
-        throw new WebDriverException(e);
-      } catch (IllegalAccessException e) {
-        throw new WebDriverException(e);
-      } catch (InvocationTargetException e) {
+      } catch (IllegalArgumentException | InvocationTargetException | IllegalAccessException e) {
         throw new WebDriverException(e);
       }
     }
@@ -239,9 +227,7 @@ public class BeanToJsonConverter {
   private Method getMethod(Object toConvert, String methodName) {
     try {
       return toConvert.getClass().getMethod(methodName);
-    } catch (SecurityException e) {
-      // fall through
-    } catch (NoSuchMethodException e) {
+    } catch (SecurityException | NoSuchMethodException e) {
       // fall through
     }
 

@@ -22,7 +22,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 
-import org.openqa.grid.common.SeleniumProtocol;
 import org.openqa.grid.common.exception.GridException;
 import org.openqa.grid.internal.ExternalSessionKey;
 import org.openqa.grid.internal.Registry;
@@ -186,8 +185,8 @@ public abstract class SeleniumBasedRequest extends HttpServletRequestWrapper {
   public String toString() {
     SimpleDateFormat format = new SimpleDateFormat("d MMM yyyy HH:mm:ss");
     StringBuilder builder = new StringBuilder();
-    builder.append("["+format.format(new Date(timestamp))+"] ");
-    builder.append(getMethod().toUpperCase() +" "+getPathInfo()+"   ");
+    builder.append("[").append(format.format(new Date(timestamp))).append("] ");
+    builder.append(getMethod().toUpperCase()).append(" ").append(getPathInfo()).append("   ");
     if (getBody() != null && !getBody().isEmpty()) {
       builder.append(getBody());
     }

@@ -89,18 +89,17 @@ public class SessionCleanerTest {
     return new Runnable(){
       public void run(){
         try {
-          session.execute(new FutureTask<Object>(new Callable<Object>()
-         {
-          public Object call() {
-            try {
-              started.countDown();
-              testDone.await();
-            } catch (InterruptedException e) {
-              throw new RuntimeException(e);
+          session.execute(new FutureTask<>(new Callable<Object>() {
+            public Object call() {
+              try {
+                started.countDown();
+                testDone.await();
+              } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+              }
+              return "yo";
             }
-            return "yo";
-          }
-        }));
+          }));
         } catch (Exception e) {
           throw new RuntimeException(e);
         }

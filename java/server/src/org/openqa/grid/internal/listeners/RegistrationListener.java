@@ -29,6 +29,6 @@ public interface RegistrationListener {
    * <p/>
    * If an exception is thrown, the proxy won't be registered.
    */
-  public void beforeRegistration();
+  void beforeRegistration();
 
 }

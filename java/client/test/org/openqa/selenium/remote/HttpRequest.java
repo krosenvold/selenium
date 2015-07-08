@@ -71,7 +71,7 @@ public class HttpRequest {
   }
 
   // I don't know why I like enums with methods, but I do.
-  public static enum Method {
+  public enum Method {
     DELETE {
       @Override
       public HttpUriRequest prepare(String url, Object payload) {

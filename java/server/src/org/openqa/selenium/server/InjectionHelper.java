@@ -47,7 +47,7 @@ public class InjectionHelper {
   private static HashMap<String, String> sessionIdToUniqueId = new HashMap<>();
 
   private static HashMap<String, String> contentTransformations = new HashMap<>();
-  private static List<String> userJsInjectionFiles = new LinkedList<String>();
+  private static List<String> userJsInjectionFiles = new LinkedList<>();
 
   public static void setBrowserSideLogEnabled(boolean browserSideLogEnabled) {
     InjectionHelper.browserSideLogEnabled = browserSideLogEnabled;
@@ -80,7 +80,7 @@ public class InjectionHelper {
       jsStateInitializersBySessionId.put(sessionId, new HashMap<String, String>());
     }
     HashMap<String, String> h = jsStateInitializersBySessionId.get(sessionId);
-    StringBuffer sb = new StringBuffer("if (uniqueId!='");
+    StringBuilder sb = new StringBuilder("if (uniqueId!='");
     sb.append(uniqueId)
         .append("') {")
         .append(jsStateInitializer)
@@ -96,7 +96,7 @@ public class InjectionHelper {
     if (h.isEmpty()) {
       return "";
     }
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (Map.Entry<String, String> entry : h.entrySet()) {
       final String jsVarName = entry.getKey();
       final String jsStateInitializer = entry.getValue();
@@ -366,7 +366,7 @@ public class InjectionHelper {
   }
 
   private static byte[] setSomeJsVars(String sessionId) {
-    StringBuffer moreJs = new StringBuffer();
+    StringBuilder moreJs = new StringBuilder();
     if (InjectionHelper.browserSideLogEnabled) {
       moreJs.append("debugMode = true;\n");
     }
@@ -414,7 +414,7 @@ public class InjectionHelper {
   // }
 
   private static byte[] makeJsChunk(String js) {
-    StringBuffer sb = new StringBuffer("\n<script language=\"JavaScript\">\n");
+    StringBuilder sb = new StringBuilder("\n<script language=\"JavaScript\">\n");
     sb.append(js)
         .append("\n</script>\n");
     return sb.toString().getBytes();

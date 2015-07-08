@@ -32,7 +32,7 @@ public class RealDealIntegrationTest extends InternalSelenseTestBase {
     selenium.setBrowserLogLevel(SeleniumLogLevels.DEBUG);
     selenium.open("/selenium-server/tests/html/test_click_page1.html");
     assertTrue("link 'link' doesn't contain expected text",
-        selenium.getText("link").indexOf("Click here for next page") != -1);
+               selenium.getText("link").contains("Click here for next page"));
     String[] links = selenium.getAllLinks();
     assertTrue(links.length > 3);
     assertEquals(links[3], "linkToAnchorOnThisPage");
@@ -59,8 +59,8 @@ public class RealDealIntegrationTest extends InternalSelenseTestBase {
       selenium.getText(badElementName);
       fail("No exception was thrown!");
     } catch (SeleniumException se) {
-      assertTrue("Exception message isn't as expected: " + se.getMessage(), se.getMessage()
-          .indexOf(badElementName + " not found") != -1);
+      assertTrue("Exception message isn't as expected: " + se.getMessage(),
+                 se.getMessage().contains(badElementName + " not found"));
     }
 
     assertFalse("Negative test", selenium.isTextPresent("Negative test: verify non-existent text"));

@@ -317,8 +317,8 @@ public abstract class BaseAugmenterTest {
   }
 
   private interface MagicNumberHolder {
-    public int getMagicNumber();
-    public void setMagicNumber(int number);
+    int getMagicNumber();
+    void setMagicNumber(int number);
   }
 
   public static class ChildRemoteDriver extends RemoteWebDriver implements MagicNumberHolder {

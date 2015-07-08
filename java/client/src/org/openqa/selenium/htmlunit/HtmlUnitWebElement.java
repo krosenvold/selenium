@@ -278,7 +278,7 @@ public class HtmlUnitWebElement implements WrapsDriver,
       }
     });
 
-    if (displayed == null || !displayed.booleanValue()) {
+    if (displayed == null || !displayed) {
       throw new ElementNotVisibleException("You may only interact with visible elements");
     }
 
@@ -683,7 +683,7 @@ public class HtmlUnitWebElement implements WrapsDriver,
   }
 
   private List<WebElement> findChildNodes(List<WebElement> allElements) {
-    List<WebElement> toReturn = new LinkedList<WebElement>();
+    List<WebElement> toReturn = new LinkedList<>();
 
     for (WebElement current : allElements) {
       DomElement candidate = ((HtmlUnitWebElement) current).element;

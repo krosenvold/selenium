@@ -62,7 +62,7 @@ public interface Kernel32 extends com.sun.jna.platform.win32.Kernel32 {
   // 0x01000000
   int CREATE_BREAKAWAY_FROM_JOB = 16777216;
 
-  static class JOBJECT_BASIC_LIMIT_INFORMATION extends Structure {
+  class JOBJECT_BASIC_LIMIT_INFORMATION extends Structure {
     public LARGE_INTEGER PerProcessUserTimeLimit;
     public LARGE_INTEGER PerJobUserTimeLimit;
     public int LimitFlags;
@@ -80,7 +80,7 @@ public interface Kernel32 extends com.sun.jna.platform.win32.Kernel32 {
     }
   }
 
-  static class IO_COUNTERS extends Structure {
+  class IO_COUNTERS extends Structure {
     public ULONGLONG ReadOperationCount;
     public ULONGLONG WriteOperationCount;
     public ULONGLONG OtherOperationCount;
@@ -94,7 +94,7 @@ public interface Kernel32 extends com.sun.jna.platform.win32.Kernel32 {
     }
   }
 
-  static class JOBJECT_EXTENDED_LIMIT_INFORMATION extends Structure {
+  class JOBJECT_EXTENDED_LIMIT_INFORMATION extends Structure {
     public JOBJECT_EXTENDED_LIMIT_INFORMATION() {}
 
     public JOBJECT_EXTENDED_LIMIT_INFORMATION(Pointer memory) {
@@ -122,7 +122,7 @@ public interface Kernel32 extends com.sun.jna.platform.win32.Kernel32 {
     }
   }
 
-  static class JOBOBJECT_BASIC_UI_RESTRICTIONS extends Structure {
+  class JOBOBJECT_BASIC_UI_RESTRICTIONS extends Structure {
     public JOBOBJECT_BASIC_UI_RESTRICTIONS() {}
 
     public JOBOBJECT_BASIC_UI_RESTRICTIONS(Pointer memory) {

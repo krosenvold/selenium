@@ -6,10 +6,10 @@
  * The software in this package is published under the terms of the BSD
  * style license a copy of which has been included with this distribution in
  * the LICENSE.txt file.
- * 
+ *
  * Created on 06. August 2004 by Joe Walnes
  *
- * Original code from <a href="http://xstream.codehaus.org/">XStream</a> 
+ * Original code from <a href="http://xstream.codehaus.org/">XStream</a>
  */
 //package com.thoughtworks.xstream.core.util;
 package org.openqa.selenium.internal;
@@ -121,7 +121,7 @@ public class Base64EncoderTest {
   }
 
   private String dumpBytes(byte bytes[]) {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     for (int i = 0; i < bytes.length; i++) {
       result.append(bytes[i]).append(' ');
       if (bytes[i] < 100) result.append(' ');

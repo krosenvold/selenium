@@ -98,14 +98,14 @@ public class ClosureTestStatement extends Statement {
     return (String) executor.executeScript(query.script);
   }
 
-  private static enum Query {
+  private enum Query {
     IS_FINISHED("return !!tr && tr.isFinished();"),
     IS_SUCCESS("return !!tr && tr.isSuccess();"),
     GET_REPORT("return tr.getReport(true);");
 
     private final String script;
 
-    private Query(String script) {
+    Query(String script) {
       this.script = "var tr = window.top.G_testRunner;" + script;
     }
   }

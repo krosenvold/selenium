@@ -46,7 +46,7 @@ class HandlerBasedLocalLogs extends LocalLogs {
   }
 
   public Set<String> getAvailableLogTypes() {
-    return ImmutableSet.<String>of(LogType.CLIENT);
+    return ImmutableSet.of(LogType.CLIENT);
   }
 
   public void addEntry(String logType, LogEntry entry) {

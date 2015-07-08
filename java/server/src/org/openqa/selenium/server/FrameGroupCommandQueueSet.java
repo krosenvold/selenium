@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  * <p>
  * Manages sets of CommandQueues corresponding to windows and frames in a single browser session.
  * </p>
- * 
+ *
  * @author nelsons
  */
 public class FrameGroupCommandQueueSet {
@@ -273,7 +273,7 @@ public class FrameGroupCommandQueueSet {
 
   /**
    * Sets this frame group's speed, and updates all command queues to use this speed.
-   * 
+   *
    * @param i millisecond delay between queue operations
    */
   protected void setSpeed(int i) {
@@ -285,7 +285,7 @@ public class FrameGroupCommandQueueSet {
 
   /**
    * Returns the delay for this frame group's command queues
-   * 
+   *
    * @return millisecond delay between queue operations
    */
   protected int getSpeed() {
@@ -295,7 +295,7 @@ public class FrameGroupCommandQueueSet {
   /**
    * Schedules the specified command to be retrieved by the next call to handle command result, and
    * returns the result of that command.
-   * 
+   *
    * @param command - the remote command verb
    * @param arg - the first remote argument (meaning depends on the verb)
    * @param value - the second remote argument
@@ -313,7 +313,7 @@ public class FrameGroupCommandQueueSet {
         boolean newFrameFound = false;
         // DGF iterate in lexical order for testability
         Set<String> idSet = uniqueIdToCommandQueue.keySet();
-        String[] ids = idSet.toArray(new String[0]);
+        String[] ids = idSet.toArray(new String[idSet.size()]);
         Arrays.sort(ids);
         for (String uniqueId : ids) {
           CommandQueue frameQ = uniqueIdToCommandQueue.get(uniqueId);
@@ -437,11 +437,11 @@ public class FrameGroupCommandQueueSet {
 
   /**
    * Generates a CSV string from the given string array.
-   * 
+   *
    * @param stringArray Array of strings to generate a CSV.
    */
   public String getStringArrayAccessorCSV(String[] stringArray) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     for (int i = 0; i < stringArray.length; i++) {
       // Obey specs for String Array accessor responses
@@ -493,14 +493,15 @@ public class FrameGroupCommandQueueSet {
       windowTitles.add(attribute);
     }
 
-    String frameAddressCSV = getStringArrayAccessorCSV(windowTitles.toArray(new String[0]));
+    String frameAddressCSV = getStringArrayAccessorCSV(
+      windowTitles.toArray(new String[windowTitles.size()]));
 
     return "OK," + frameAddressCSV;
   }
 
   /**
    * Get a window title in the given CommandQueue.
-   * 
+   *
    * @param queue CommandQueue to get the title from.
    * @return Returns the title if it is found.
    * @throws WindowClosedException
@@ -581,7 +582,7 @@ public class FrameGroupCommandQueueSet {
   /**
    * Waits on the condition, making sure to wait at least as many seconds as specified, unless the
    * condition is signaled first.
-   * 
+   *
    * @param condition
    * @param numSeconds
    */
@@ -631,7 +632,7 @@ public class FrameGroupCommandQueueSet {
 
   /**
    * Does uniqueId point at a window that matches 'windowName'/'localFrame'?
-   * 
+   *
    * @param uniqueId
    * @param windowName
    * @param localFrame
@@ -684,7 +685,7 @@ public class FrameGroupCommandQueueSet {
    * <p>
    * Accepts a command reply, and retrieves the next command to run.
    * </p>
-   * 
+   *
    * @param commandResult - the reply from the previous command, or null
    * @param incomingFrameAddress - frame from which the reply came
    * @param uniqueId
@@ -793,7 +794,7 @@ public class FrameGroupCommandQueueSet {
     log.fine("resetting frame group");
     if (proxyInjectionMode) {
       // shut down all but the primary top level connection
-      List<FrameAddress> newOrphans = new LinkedList<FrameAddress>();
+      List<FrameAddress> newOrphans = new LinkedList<>();
       for (String uniqueId : uniqueIdToCommandQueue.keySet()) {
         CommandQueue q = getCommandQueue(uniqueId);
         FrameAddress frameAddress = q.getFrameAddress();

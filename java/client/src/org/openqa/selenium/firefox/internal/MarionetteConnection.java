@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -147,11 +146,7 @@ public class MarionetteConnection implements ExtensionConnection, NeedsLocalLogs
           // Do nothing
         }
       }
-    } catch (IOException e) {
-      throw new WebDriverException(
-          String.format("Failed to connect to binary %s on port %d; process output follows: %n%s",
-              process.toString(), port, process.getConsoleOutput()), e);
-    } catch (WebDriverException e) {
+    } catch (IOException | WebDriverException e) {
       throw new WebDriverException(
           String.format("Failed to connect to binary %s on port %d; process output follows: %n%s",
               process.toString(), port, process.getConsoleOutput()), e);
@@ -179,10 +174,6 @@ public class MarionetteConnection implements ExtensionConnection, NeedsLocalLogs
       socket = new Socket(host, port);
       writer = new PrintWriter(socket.getOutputStream(), true);
       reader = new InputStreamReader(socket.getInputStream());
-    } catch (ConnectException ex) {
-      socket = null;
-      writer = null;
-      reader = null;
     } catch (IOException ex) {
       socket = null;
       writer = null;

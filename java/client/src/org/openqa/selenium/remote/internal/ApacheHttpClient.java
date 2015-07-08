@@ -28,7 +28,6 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.NoHttpResponseException;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -141,16 +140,8 @@ public class ApacheHttpClient implements org.openqa.selenium.remote.http.HttpCli
       HttpContext context, HttpUriRequest httpMethod) throws IOException {
     try {
       return client.execute(targetHost, httpMethod, context);
-    } catch (BindException e) {
+    } catch (BindException | NoHttpResponseException e) {
       // If we get this, there's a chance we've used all the local ephemeral sockets
-      // Sleep for a bit to let the OS reclaim them, then try the request again.
-      try {
-        Thread.sleep(2000);
-      } catch (InterruptedException ie) {
-        throw Throwables.propagate(ie);
-      }
-    } catch (NoHttpResponseException e) {
-      // If we get this, there's a chance we've used all the remote ephemeral sockets
       // Sleep for a bit to let the OS reclaim them, then try the request again.
       try {
         Thread.sleep(2000);
@@ -192,11 +183,7 @@ public class ApacheHttpClient implements org.openqa.selenium.remote.http.HttpCli
       get.setHeader("Accept", "application/json; charset=utf-8");
       org.apache.http.HttpResponse newResponse = client.execute(targetHost, get, context);
       return followRedirects(client, context, newResponse, redirectCount + 1);
-    } catch (URISyntaxException e) {
-      throw new WebDriverException(e);
-    } catch (ClientProtocolException e) {
-      throw new WebDriverException(e);
-    } catch (IOException e) {
+    } catch (URISyntaxException | IOException e) {
       throw new WebDriverException(e);
     }
   }

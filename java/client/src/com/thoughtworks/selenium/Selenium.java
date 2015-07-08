@@ -171,7 +171,7 @@ public interface Selenium {
   void start();
 
   /** Starts a new Selenium testing session with a String, representing a configuration */
-  public void start(String optionsString);
+  void start(String optionsString);
 
   /** Starts a new Selenium testing session with a configuration options object */
   void start(Object optionsObject);

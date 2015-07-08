@@ -132,7 +132,7 @@ public abstract class AsyncHttpRequest {
     }
 
     private String stringContentsOfInputStream(InputStream is) throws IOException {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       InputStreamReader r = new InputStreamReader(is, "UTF-8");
       int c;
       while ((c = r.read()) != -1) {

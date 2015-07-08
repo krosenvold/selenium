@@ -162,7 +162,7 @@ public class FluentWait<T> implements Wait<T> {
   public FluentWait<T> ignoring(Class<? extends Throwable> firstType,
                                 Class<? extends Throwable> secondType) {
 
-    return this.ignoreAll(ImmutableList.<Class<? extends Throwable>>of(firstType, secondType));
+    return this.ignoreAll(ImmutableList.of(firstType, secondType));
   }
 
   /**

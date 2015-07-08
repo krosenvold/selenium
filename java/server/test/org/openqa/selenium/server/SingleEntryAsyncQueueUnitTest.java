@@ -221,7 +221,7 @@ public class SingleEntryAsyncQueueUnitTest {
     public Object go() throws Throwable {
       boolean result = queue.putContent(content);
       logger.debug(Thread.currentThread().getName() + " got result: " + result);
-      return Boolean.valueOf(result);
+      return result;
     }
   }
 

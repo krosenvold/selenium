@@ -60,10 +60,9 @@ public abstract class Condition {
     if (vers >= 49) {
       try {
         Method format =
-            String.class.getMethod("format", new Class[] {String.class, Object[].class});
-        return (String) format.invoke(null, new Object[] {message, args});
-      } catch (NoSuchMethodException e) {
-      } catch (IllegalAccessException e) {
+            String.class.getMethod("format", String.class, Object[].class);
+        return (String) format.invoke(null, message, args);
+      } catch (NoSuchMethodException | IllegalAccessException e) {
       } catch (InvocationTargetException e) {
         Throwable throwable = e.getCause();
         if (throwable instanceof RuntimeException) {
@@ -74,8 +73,8 @@ public abstract class Condition {
     } else {
       String msg = "";
       msg = message;
-      for (int i = 0; i < args.length; i++) {
-        msg = msg + " " + args[i];
+      for (Object arg : args) {
+        msg = msg + " " + arg;
       }
       return msg;
 

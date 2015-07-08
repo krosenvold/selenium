@@ -33,6 +33,6 @@ public interface TimeoutListener {
    *
    * @param session
    */
-  public void beforeRelease(TestSession session);
+  void beforeRelease(TestSession session);
 
 }

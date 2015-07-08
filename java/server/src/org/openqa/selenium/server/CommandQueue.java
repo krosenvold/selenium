@@ -176,19 +176,18 @@ public class CommandQueue {
 
   @Override
   public String toString() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     if (closed.get()) {
       sb.append("CLOSED ");
     }
     sb.append("{ commandHolder=");
-    sb.append("commandHolder/" + uniqueId + "-"
-        + idGenerator.get() + " " + (commandHolder.isEmpty()
-            ? "null" : commandHolder.peek()))
-        .append(", ")
-        .append(" resultHolder=")
-        .append("resultHolder/" + uniqueId + "-"
-            + idGenerator.get() + " " + (resultHolder.isEmpty()
-                ? "null" : resultHolder.peek()))
+    sb.append("commandHolder/").append(uniqueId).append("-").append(idGenerator.get()).append(" ")
+      .append(commandHolder.isEmpty()
+              ? "null" : commandHolder.peek())
+      .append(", ")
+      .append(" resultHolder=").append("resultHolder/").append(uniqueId).append("-")
+      .append(idGenerator.get()).append(" ").append(resultHolder.isEmpty()
+                                                    ? "null" : resultHolder.peek())
         .append(" }");
 
     return sb.toString();
@@ -258,7 +257,7 @@ public class CommandQueue {
   }
 
   protected static String getIdentification(String caller, String queueId) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     if (queueId != null) {
       sb.append(queueId)
           .append(' ');

@@ -21,7 +21,6 @@ package org.openqa.selenium.environment.webserver;
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static org.openqa.selenium.net.PortProber.findFreePort;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.concurrent.Future;

@@ -129,7 +129,7 @@ public class SeleniumDriverResourceHandlerUnitTest {
     when(queueSet.doCommand("type", locator, tmpDir + File.separator + fileName))
         .thenReturn("OK");
 
-    Vector<String> values = new Vector<String>();
+    Vector<String> values = new Vector<>();
     values.add(locator);
     values.add("file:///" + fileName);
 

@@ -191,18 +191,13 @@ public class KeyStoreManager {
     } catch (FileNotFoundException e) {
       // check for file exists, won't happen.
       e.printStackTrace();
-    } catch (IOException e) {
+    } catch (IOException | ClassNotFoundException e) {
       // we could correct, but this probably indicates a corruption
       // of the serialized file that we want to know about; likely
       // synchronization problems during serialization.
       e.printStackTrace();
       throw new Error(e);
-    } catch (ClassNotFoundException e) {
-      // serious problem.
-      e.printStackTrace();
-      throw new Error(e);
     }
-
 
     BigInteger p = new BigInteger(
             "fd7f53811d75122952df4a9c2eece4e7f611b7523cef4400c31e3f80b6512669"
@@ -265,16 +260,11 @@ public class KeyStoreManager {
     } catch (FileNotFoundException e) {
       // won't happen, check file.exists()
       e.printStackTrace();
-    } catch (IOException e) {
+    } catch (IOException | ClassNotFoundException e) {
       // corrupted file, we want to know.
       e.printStackTrace();
       throw new Error(e);
-    } catch (ClassNotFoundException e) {
-      // something very wrong, exit
-      e.printStackTrace();
-      throw new Error(e);
     }
-
 
     try {
 
@@ -295,12 +285,8 @@ public class KeyStoreManager {
     } catch (FileNotFoundException e) {
       // won't happen, check file.exists()
       e.printStackTrace();
-    } catch (IOException e) {
+    } catch (IOException | ClassNotFoundException e) {
       // corrupted file, we want to know.
-      e.printStackTrace();
-      throw new Error(e);
-    } catch (ClassNotFoundException e) {
-      // something very wrong, exit
       e.printStackTrace();
       throw new Error(e);
     }

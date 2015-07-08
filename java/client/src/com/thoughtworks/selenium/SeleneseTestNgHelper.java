@@ -76,7 +76,7 @@ public class SeleneseTestNgHelper extends SeleneseTestBase {
         "", "");
     TestRunner tr = (TestRunner) context;
     File outputDirectory = new File(context.getOutputDirectory());
-    tr.addListener((IResultListener) new ScreenshotListener(outputDirectory,
+    tr.addListener(new ScreenshotListener(outputDirectory,
         screenshotTaker));
   }
 

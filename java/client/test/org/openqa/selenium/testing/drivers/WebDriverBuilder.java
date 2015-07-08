@@ -73,9 +73,7 @@ public class WebDriverBuilder implements Supplier<WebDriver> {
       setLogLevel.invoke(driver, level.getLevel());
     } catch (NoSuchMethodException e) {
       return;
-    } catch (InvocationTargetException e) {
-      throw Throwables.propagate(e);
-    } catch (IllegalAccessException e) {
+    } catch (InvocationTargetException | IllegalAccessException e) {
       throw Throwables.propagate(e);
     }
   }

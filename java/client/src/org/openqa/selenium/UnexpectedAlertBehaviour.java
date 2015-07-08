@@ -26,7 +26,7 @@ public enum UnexpectedAlertBehaviour {
 
   private String text;
 
-  private UnexpectedAlertBehaviour(String text) {
+  UnexpectedAlertBehaviour(String text) {
     this.text = text;
   }
 

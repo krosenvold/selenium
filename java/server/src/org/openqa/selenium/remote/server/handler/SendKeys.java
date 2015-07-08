@@ -28,7 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SendKeys extends WebElementHandler<Void> implements JsonParametersAware {
 
-  private final List<CharSequence> keys = new CopyOnWriteArrayList<CharSequence>();
+  private final List<CharSequence> keys = new CopyOnWriteArrayList<>();
 
   public SendKeys(Session session) {
     super(session);
@@ -46,7 +46,7 @@ public class SendKeys extends WebElementHandler<Void> implements JsonParametersA
 
   @Override
   public Void call() throws Exception {
-    String[] keysToSend = keys.toArray(new String[0]);
+    String[] keysToSend = keys.toArray(new String[keys.size()]);
     getElement().sendKeys(keysToSend);
 
     return null;

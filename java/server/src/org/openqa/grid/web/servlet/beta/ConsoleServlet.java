@@ -166,11 +166,9 @@ public class ConsoleServlet extends RegistryBasedServlet {
     builder.append("</body>");
     builder.append("</html>");
 
-    InputStream in = new ByteArrayInputStream(builder.toString().getBytes("UTF-8"));
-    try {
+    try (InputStream in = new ByteArrayInputStream(builder.toString().getBytes("UTF-8"))){
       ByteStreams.copy(in, response.getOutputStream());
     } finally {
-      in.close();
       response.getOutputStream().close();
     }
   }

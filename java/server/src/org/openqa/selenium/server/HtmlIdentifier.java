@@ -54,6 +54,7 @@ package org.openqa.selenium.server;
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -142,9 +143,7 @@ public class HtmlIdentifier {
 
     public ExtensionRule(String[] ext, int score) {
       super(null, score, 0);
-      for (String s : ext) {
-        exts.add(s);
-      }
+      Collections.addAll(exts, ext);
       name = "extension " + exts;
     }
 

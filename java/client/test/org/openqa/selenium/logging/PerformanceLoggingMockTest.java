@@ -49,7 +49,7 @@ public class PerformanceLoggingMockTest {
           "timestamp", 1L,
           "message", "second")));
 
-    LocalLogs localLogs = LocalLogs.getStoringLoggerInstance(ImmutableSet.<String>of(LogType.PROFILER));
+    LocalLogs localLogs = LocalLogs.getStoringLoggerInstance(ImmutableSet.of(LogType.PROFILER));
     RemoteLogs logs = new RemoteLogs(executeMethod, localLogs);
     localLogs.addEntry(LogType.PROFILER, new LogEntry(Level.INFO, 0, "first"));
     localLogs.addEntry(LogType.PROFILER, new LogEntry(Level.INFO, 2, "third"));

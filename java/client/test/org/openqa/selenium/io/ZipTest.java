@@ -154,16 +154,13 @@ public class ZipTest {
 
   private void assertZipContains(File output, String s) throws IOException {
     FileInputStream fis = new FileInputStream(output);
-    ZipInputStream zis = new ZipInputStream(fis);
-    try {
+    try (ZipInputStream zis = new ZipInputStream(fis)) {
       ZipEntry entry;
       while ((entry = zis.getNextEntry()) != null) {
         if (s.equals(entry.getName().replaceAll("\\\\", "/"))) {
           return;
         }
       }
-    } finally {
-      zis.close();
     }
 
     fail("File not in zip: " + s);

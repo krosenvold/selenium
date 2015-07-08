@@ -39,7 +39,7 @@ public class Open extends SeleneseCommand<Void> {
   @Override
   protected Void handleSeleneseCommand(final WebDriver driver, String url, String ignored) {
     try {
-      final String urlToOpen = url.indexOf("://") == -1 ?
+      final String urlToOpen = !url.contains("://") ?
           new URL(baseUrl, url).toString() :
           url;
 

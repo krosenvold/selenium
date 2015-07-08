@@ -56,7 +56,7 @@ public class DefaultHtmlRenderer implements HtmlRenderer {
     for (TestSlot slot : proxy.getTestSlots()) {
       builder.append(slot.getCapabilities().containsKey(BROWSER) ? slot.getCapabilities().get(
           BROWSER) : slot.getCapabilities().get(APP));
-      builder.append("protocol:"+slot.getProtocol()+"<br>");
+      builder.append("protocol:").append(slot.getProtocol()).append("<br>");
       TestSession session = slot.getSession();
       builder.append(session == null ? "(free)" : "(busy, session " + session + ")");
       builder.append("<br>");

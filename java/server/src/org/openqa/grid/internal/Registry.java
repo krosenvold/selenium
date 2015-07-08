@@ -61,7 +61,7 @@ public class Registry {
   private final HttpClientFactory httpClientFactory;
   private final NewSessionRequestQueue newSessionQueue;
   private final Matcher matcherThread = new Matcher();
-  private final List<RemoteProxy> registeringProxies = new CopyOnWriteArrayList<RemoteProxy>();
+  private final List<RemoteProxy> registeringProxies = new CopyOnWriteArrayList<>();
   private final CapabilityMatcher capabilityMatcher;
 
   private volatile boolean stop = false;

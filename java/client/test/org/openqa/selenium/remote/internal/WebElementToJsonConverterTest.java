@@ -58,7 +58,7 @@ public class WebElementToJsonConverterTest {
     assertNull(CONVERTER.apply(null));
     assertEquals("abc", CONVERTER.apply("abc"));
     assertEquals(Boolean.TRUE, CONVERTER.apply(Boolean.TRUE));
-    assertEquals(Integer.valueOf(123), CONVERTER.apply(123));
+    assertEquals(123, CONVERTER.apply(123));
     assertEquals(Math.PI, CONVERTER.apply(Math.PI));
   }
 
@@ -139,7 +139,7 @@ public class WebElementToJsonConverterTest {
       CONVERTER.apply(ImmutableMap.of(
           "one", ImmutableMap.of(
           "two", ImmutableMap.of(
-          Integer.valueOf(3), "not good"))));
+            3, "not good"))));
       fail();
     } catch (IllegalArgumentException expected) {
     }

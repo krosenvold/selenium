@@ -126,7 +126,7 @@ public class HttpCommandProcessor implements CommandProcessor {
   }
 
   private String stringContentsOfInputStream(Reader rdr) throws IOException {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     int c;
     try {
       while ((c = rdr.read()) != -1) {
@@ -214,7 +214,7 @@ public class HttpCommandProcessor implements CommandProcessor {
   }
 
   private String buildCommandBody(String command) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(command);
     if (sessionId != null) {
       sb.append("&sessionId=");
@@ -325,7 +325,7 @@ public class HttpCommandProcessor implements CommandProcessor {
     }
     if (n instanceof Long && n.intValue() == n.longValue()) {
       // SRC-315 we should return Integers if possible
-      return Integer.valueOf(n.intValue());
+      return n.intValue();
     }
     return n;
   }

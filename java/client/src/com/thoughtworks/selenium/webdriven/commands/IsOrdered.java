@@ -51,6 +51,6 @@ public class IsOrdered extends SeleneseCommand<Boolean> {
             "    return false;\n";
 
     Boolean result = (Boolean) js.executeScript(driver, ordered, one, two);
-    return result != null && result.booleanValue();
+    return result != null && result;
   }
 }

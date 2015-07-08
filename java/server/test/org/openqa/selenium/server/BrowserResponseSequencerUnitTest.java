@@ -96,7 +96,7 @@ public class BrowserResponseSequencerUnitTest {
     }
 
     public FutureTask<Void> launchThread() {
-      FutureTask<Void> ft = new FutureTask<Void>(this);
+      FutureTask<Void> ft = new FutureTask<>(this);
       new Thread(ft, NumberWriter.class.getName() + '-' + num).start();  // Thread safety reviewed
       return ft;
     }

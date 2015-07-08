@@ -77,14 +77,10 @@ public class Utils {
         return remoteImplementationClazz
             .getConstructor(ExecuteMethod.class)
             .newInstance((ExecuteMethod) driver);
-      } catch (InstantiationException e) {
-        throw new WebDriverException(e);
-      } catch (IllegalAccessException e) {
+      } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
         throw new WebDriverException(e);
       } catch (InvocationTargetException e) {
         throw Throwables.propagate(e.getCause());
-      } catch (NoSuchMethodException e) {
-        throw new WebDriverException(e);
       }
     }
 

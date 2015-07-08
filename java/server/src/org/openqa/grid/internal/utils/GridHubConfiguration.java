@@ -261,23 +261,23 @@ public class GridHubConfiguration {
     // Now pull out each of the grid config values.
     Integer poll = (Integer) hub.get("remoteControlPollingIntervalInSeconds");
     if (poll != null) {
-      allParams.put(RegistrationRequest.NODE_POLLING, poll.intValue() * 1000);
-      cleanupCycle = poll.intValue() * 1000;
+      allParams.put(RegistrationRequest.NODE_POLLING, poll * 1000);
+      cleanupCycle = poll * 1000;
     }
 
     Integer timeout = (Integer) hub.get("sessionMaxIdleTimeInSeconds");
     if (timeout != null) {
-      setTimeout(timeout.intValue() * 1000);
+      setTimeout(timeout * 1000);
     }
 
     Integer port = (Integer) hub.get(RegistrationRequest.PORT);
     if (port != null) {
-      setPort(port.intValue());
+      setPort(port);
     }
 
     Integer newSessionWait = (Integer) hub.get("newSessionMaxWaitTimeInSeconds");
     if (newSessionWait != null) {
-      setNewSessionWaitTimeout(newSessionWait.intValue() * 1000);
+      setNewSessionWaitTimeout(newSessionWait * 1000);
     }
 
     allParams.put(RegistrationRequest.MAX_SESSION, 1);

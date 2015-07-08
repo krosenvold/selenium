@@ -121,7 +121,7 @@ public class DefaultSelenium implements Selenium {
     // Found)
     catch (Exception e) {
       final String message = e.getMessage();
-      if (message != null && message.indexOf("Connection refused: connect") != -1) {
+      if (message != null && message.contains("Connection refused: connect")) {
         throw new RuntimeException("Could not contact Selenium Server; have you started it?\n" +
             e.getMessage());
       }
@@ -150,13 +150,13 @@ public class DefaultSelenium implements Selenium {
       String className = null;
       String methodName = null;
 
-      for (int i = 0; i < e.length; i++) {
-        if (e[i].getClassName().equals("java.lang.Thread")
-            || e[i].getMethodName().equals("showContextualBanner")) {
+      for (StackTraceElement anE : e) {
+        if (anE.getClassName().equals("java.lang.Thread")
+            || anE.getMethodName().equals("showContextualBanner")) {
           continue;
         }
-        className = e[i].getClassName();
-        methodName = e[i].getMethodName();
+        className = anE.getClassName();
+        methodName = anE.getMethodName();
         break;
       }
       showContextualBanner(className, methodName);

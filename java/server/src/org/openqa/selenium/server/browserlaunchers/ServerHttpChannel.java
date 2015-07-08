@@ -165,22 +165,16 @@ public class ServerHttpChannel implements Runnable {
     connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF8");
     connection.setRequestProperty("Content-Length", String.valueOf(toSend.length));
 
-    OutputStream out = connection.getOutputStream();
-    try {
+    try (OutputStream out = connection.getOutputStream()) {
       out.write(toSend);
       out.flush();
-    } finally {
-      out.close();
     }
   }
 
   public String read() throws IOException {
-    InputStream input = connection.getInputStream();
     byte[] bytes = null;
-    try {
+    try (InputStream input = connection.getInputStream()) {
       bytes = ByteStreams.toByteArray(input);
-    } finally {
-      input.close();
     }
     connection.disconnect();
     connection = null;

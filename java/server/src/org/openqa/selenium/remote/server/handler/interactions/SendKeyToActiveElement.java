@@ -30,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SendKeyToActiveElement extends WebDriverHandler<Void> implements JsonParametersAware {
 
-  private final List<CharSequence> keys = new CopyOnWriteArrayList<CharSequence>();
+  private final List<CharSequence> keys = new CopyOnWriteArrayList<>();
 
   public SendKeyToActiveElement(Session session) {
     super(session);
@@ -52,7 +52,7 @@ public class SendKeyToActiveElement extends WebDriverHandler<Void> implements Js
   public Void call() throws Exception {
     Keyboard keyboard = ((HasInputDevices) getDriver()).getKeyboard();
 
-    String[] keysToSend = keys.toArray(new String[0]);
+    String[] keysToSend = keys.toArray(new String[keys.size()]);
     keyboard.sendKeys(keysToSend);
 
     return null;

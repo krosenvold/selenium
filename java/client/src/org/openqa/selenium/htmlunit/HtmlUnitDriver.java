@@ -124,7 +124,7 @@ import com.google.common.collect.Sets;
 /**
  * An implementation of {@link WebDriver} that drives <a href="http://htmlunit.sourceforge.net/">HtmlUnit</a>,
  * which is a headless (GUI-less) browser simulator.
- * <p>The main supported browsers are Chrome, Firefox and Internet Explorer. 
+ * <p>The main supported browsers are Chrome, Firefox and Internet Explorer.
  */
 public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
     FindsById, FindsByLinkText, FindsByXPath, FindsByName, FindsByCssSelector,
@@ -371,9 +371,9 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
         String noProxy = proxy.getNoProxy();
         if (noProxy != null && !noProxy.equals("")) {
           String[] hosts = noProxy.split(",");
-          for (int i = 0; i < hosts.length; i++) {
-            if (hosts[i].trim().length() > 0) {
-              noProxyHosts.add(hosts[i].trim());
+          for (String host : hosts) {
+            if (host.trim().length() > 0) {
+              noProxyHosts.add(host.trim());
             }
           }
         }
@@ -578,7 +578,7 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
       return null; // no page so there is no title
     }
     if (getCurrentWindow() instanceof FrameWindow) {
-      page = ((FrameWindow) getCurrentWindow()).getTopWindow().getEnclosedPage();
+      page = getCurrentWindow().getTopWindow().getEnclosedPage();
     }
 
     return ((HtmlPage) page).getTitleText();
@@ -841,7 +841,7 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
     if (value instanceof Number) {
       final Number n = (Number) value;
       final String s = n.toString();
-      if (s.indexOf(".") == -1 || s.endsWith(".0")) { // how safe it is? enough for the unit tests!
+      if (!s.contains(".") || s.endsWith(".0")) { // how safe it is? enough for the unit tests!
         return n.longValue();
       }
       return n.doubleValue();
@@ -1076,7 +1076,7 @@ public class HtmlUnitDriver implements WebDriver, JavascriptExecutor,
 
     List<DomElement> allElements = ((HtmlPage) lastPage()).getElementsByName(name);
     if (!allElements.isEmpty()) {
-      return newHtmlUnitWebElement((HtmlElement) allElements.get(0));
+      return newHtmlUnitWebElement(allElements.get(0));
     }
 
     throw new NoSuchElementException("Unable to locate element with name: " + name);

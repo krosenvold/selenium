@@ -61,8 +61,7 @@ public class DefaultSeleniumTest {
 
     public String doCommand(String command, String[] args) {
       commands.append(command);
-      for (int i = 0; i < args.length; i++) {
-        String arg = args[i];
+      for (String arg : args) {
         commands.append(",").append(arg);
       }
       commands.append("\n");

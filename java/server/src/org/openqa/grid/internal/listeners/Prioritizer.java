@@ -33,5 +33,5 @@ public interface Prioritizer {
    * @return a negative number is a is less important than b, a positive number is a is more
    *         important than b, 0 if a and b are equally as important.
    */
-  public int compareTo(Map<String, Object> a, Map<String, Object> b);
+  int compareTo(Map<String, Object> a, Map<String, Object> b);
 }

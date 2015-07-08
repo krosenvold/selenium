@@ -80,8 +80,8 @@ public class I18nTest extends InternalSelenseTestBase {
     assertTrue(selenium.isTextPresent(expected));
     String actual = selenium.getText(id);
     byte[] result = actual.getBytes("UTF-8");
-    for (int i = 0; i < result.length; i++) {
-      Byte b = new Byte(result[i]);
+    for (byte aResult : result) {
+      Byte b = aResult;
     }
     Assert.assertEquals(id + " characters didn't match", expected, actual);
   }

@@ -191,14 +191,14 @@ public class JavascriptEnabledDriverTest extends JUnit4TestBase {
     input.sendKeys("test");
     moveFocus();
     assertThat(driver.findElement(By.id("result")).getText().trim(),
-               Matchers.<String>either(is("focus change blur")).or(is("focus blur change")));
+               Matchers.either(is("focus change blur")).or(is("focus blur change")));
 
     input.sendKeys(Keys.BACK_SPACE, "t");
     moveFocus();
 
     // I weep.
     assertThat(driver.findElement(By.id("result")).getText().trim(),
-               Matchers.<String>either(is("focus change blur focus blur"))
+               Matchers.either(is("focus change blur focus blur"))
                    .or(is("focus blur change focus blur"))
                    .or(is("focus blur change focus blur change"))
                    .or(is("focus change blur focus change blur"))); // What Chrome does

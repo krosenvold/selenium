@@ -54,7 +54,6 @@ import org.openqa.selenium.server.htmlrunner.HTMLLauncher;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -224,11 +223,11 @@ public class SeleniumDriverResourceHandler extends ResourceHandler {
 
   private void logPostedData(FrameAddress frameAddress, boolean justLoaded, String sessionId,
       String postedData, String uniqueId) {
-    StringBuffer sb = new StringBuffer();
-    sb.append(
-      "Browser " + sessionId + "/" + frameAddress + " " + uniqueId + " posted " + postedData);
+    StringBuilder sb = new StringBuilder();
+    sb.append("Browser ").append(sessionId).append("/").append(frameAddress).append(" ")
+      .append(uniqueId).append(" posted ").append(postedData);
     if (!frameAddress.isDefault()) {
-      sb.append(" from " + frameAddress);
+      sb.append(" from ").append(frameAddress);
     }
     if (justLoaded) {
       sb.append(" NEW");
@@ -279,7 +278,7 @@ public class SeleniumDriverResourceHandler extends ResourceHandler {
     }
 
     InputStream is = req.getInputStream();
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     InputStreamReader r = new InputStreamReader(is, "UTF-8");
     int c;
     while ((c = r.read()) != -1) {
@@ -359,7 +358,7 @@ public class SeleniumDriverResourceHandler extends ResourceHandler {
 
   private String grepStringsStartingWith(String pattern, String s) {
     String[] lines = s.split("\n");
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     String retval = null;
     for (String line : lines) {
       if (line.startsWith(pattern)) {
@@ -438,14 +437,8 @@ public class SeleniumDriverResourceHandler extends ResourceHandler {
 
           setDomain(sessionId, values.get(1));
           results = "OK," + sessionId;
-        } catch (RemoteCommandException rce) {
+        } catch (RemoteCommandException | RuntimeException rce) {
           results = "Failed to start new browser session: " + rce;
-        } catch (InvalidBrowserExecutableException ibex) {
-          results = "Failed to start new browser session: " + ibex;
-        } catch (IllegalArgumentException iaex) {
-          results = "Failed to start new browser session: " + iaex;
-        } catch (RuntimeException rte) {
-          results = "Failed to start new browser session: " + rte;
         }
         // clear out any network traffic captured but never pulled back by the last client (this
         // feature only works with one concurrent browser, similar to PI mode)
@@ -661,7 +654,7 @@ public class SeleniumDriverResourceHandler extends ResourceHandler {
 
 
   private Vector<String> parseSeleneseParameters(HttpRequest req) {
-    Vector<String> values = new Vector<String>();
+    Vector<String> values = new Vector<>();
 
     for (int i = 1; req.getParameter(Integer.toString(i)) != null; i++) {
       values.add(req.getParameter(Integer.toString(i)));
@@ -691,8 +684,6 @@ public class SeleniumDriverResourceHandler extends ResourceHandler {
        outputTo = new FileOutputStream(outputFile);
 
       Resources.copy(url, outputTo);
-    } catch (FileNotFoundException e) {
-      throw Throwables.propagate(e);
     } catch (IOException e) {
       throw Throwables.propagate(e);
     } finally {
@@ -835,26 +826,22 @@ public class SeleniumDriverResourceHandler extends ResourceHandler {
     res.removeField(HttpFields.__Connection);
     // Now, claim that this connection is *actually* persistent
     Field[] fields = HttpConnection.class.getDeclaredFields();
-    for (int i = 0; i < fields.length; i++) {
-      if (fields[i].getName().equals("_close")) {
-        Field _close = fields[i];
+    for (Field field : fields) {
+      if (field.getName().equals("_close")) {
+        Field _close = field;
         _close.setAccessible(true);
         try {
           _close.setBoolean(res.getHttpConnection(), false);
-        } catch (IllegalArgumentException e) {
-          e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
           e.printStackTrace();
         }
       }
-      if (fields[i].getName().equals("_persistent")) {
-        Field _close = fields[i];
+      if (field.getName().equals("_persistent")) {
+        Field _close = field;
         _close.setAccessible(true);
         try {
           _close.setBoolean(res.getHttpConnection(), true);
-        } catch (IllegalArgumentException e) {
-          e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
           e.printStackTrace();
         }
       }

@@ -482,7 +482,7 @@ public class MacProxyManager {
 
     /** Return bypass domains as tab-delimited string */
     public String bypassAsString() {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append(bypass.length).append('\t');
       for (String domain : bypass) {
         sb.append(domain).append('\t');
@@ -492,7 +492,7 @@ public class MacProxyManager {
 
     @Override
     public String toString() {
-      StringBuffer sb = new StringBuffer("{serviceName=");
+      StringBuilder sb = new StringBuilder("{serviceName=");
       sb.append(serviceName)
           .append(", enabled=").append(enabled)
           .append(", proxyServer=").append(proxyServer)

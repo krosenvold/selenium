@@ -75,8 +75,7 @@ public class WebProxyHtmlRenderer implements HtmlRenderer {
         builder.append(" title='").append(session.get("lastCommand")).append("' ");
       } else {
         builder.append(" title='")
-        .append(slot.getCapabilities())
-        .append("type="+slot.getProtocol())
+          .append(slot.getCapabilities()).append("type=").append(slot.getProtocol())
         .append("' ");
       }
 

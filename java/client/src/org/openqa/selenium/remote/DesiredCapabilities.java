@@ -127,7 +127,7 @@ public class DesiredCapabilities implements Serializable, Capabilities {
       if (raw instanceof String) {
         return Boolean.parseBoolean((String) raw);
       } else if (raw instanceof Boolean) {
-        return ((Boolean) raw).booleanValue();
+        return (Boolean) raw;
       }
     }
     return true;

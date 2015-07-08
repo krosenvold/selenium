@@ -93,23 +93,7 @@ public class Generator {
             // Convert the generated DEC to PEM using OpenSSL
             Process p = Runtime.getRuntime().exec(OPENSSL_CMD_DEC_TO_PEM);
             p.waitFor();
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CertificateParsingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnrecoverableKeyException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (SignatureException e) {
-            e.printStackTrace();
-        } catch (CRLException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (KeyStoreException | InterruptedException | CRLException | SignatureException | InvalidKeyException | UnrecoverableKeyException | NoSuchAlgorithmException | CertificateParsingException | IOException e) {
             e.printStackTrace();
         }
     }

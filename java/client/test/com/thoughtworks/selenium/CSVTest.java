@@ -32,9 +32,9 @@ public class CSVTest {
   @Before
   public void setUp() {
     Method[] methods = HttpCommandProcessor.class.getDeclaredMethods();
-    for (int i = 0; i < methods.length; i++) {
-      if ("parseCSV".equals(methods[i].getName())) {
-        Method csvMethod = methods[i];
+    for (Method method : methods) {
+      if ("parseCSV".equals(method.getName())) {
+        Method csvMethod = method;
         csvMethod.setAccessible(true);
         CSV = csvMethod;
         break;

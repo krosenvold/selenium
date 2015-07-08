@@ -127,11 +127,11 @@ public class PageFactoryTest {
 
     PageFactory.initElements(new FieldDecorator() {
       public Object decorate(ClassLoader loader, Field field) {
-        return new Integer(5);
+        return 5;
       }
     }, page);
 
-    assertThat(page.num, equalTo(new Integer(5)));
+    assertThat(page.num, equalTo(5));
   }
 
   @Test

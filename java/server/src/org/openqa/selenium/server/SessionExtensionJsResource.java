@@ -75,16 +75,12 @@ class SessionExtensionJsResource extends URLResource {
     // TODO(flight): I think this is equivalent.
     // The original code used a StringInputStream from Ant
 
-    InputStream in = new ByteArrayInputStream(extensionJs.getBytes());
-
-    try {
+    try (InputStream in = new ByteArrayInputStream(extensionJs.getBytes())) {
       in.skip(start);
       if (count < 0)
         IO.copy(in, out);
       else
         IO.copy(in, out, (int) count);
-    } finally {
-      in.close();
     }
   }
 }

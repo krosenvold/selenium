@@ -118,7 +118,7 @@ public class ErrorCodes {
 
   private static Map<String, Integer> stateToStatus;
   static {
-    ImmutableMap.Builder<String, Integer> builder = ImmutableMap.<String, Integer>builder();
+    ImmutableMap.Builder<String, Integer> builder = ImmutableMap.builder();
     for (Map.Entry<Integer, String> pair : statusToState.entrySet()) {
       // Ignore duplicate "invalid selector" codes
       if (! pair.getValue().equals("invalid selector") || pair.getKey() == INVALID_SELECTOR_ERROR) {

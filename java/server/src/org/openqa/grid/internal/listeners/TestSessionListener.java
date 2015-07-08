@@ -44,7 +44,7 @@ public interface TestSessionListener {
    * @param session
    * @see RegistrationListener if the setup applies to all the tests.
    */
-  public void beforeSession(TestSession session);
+  void beforeSession(TestSession session);
 
   /**
    * Will be run after the last command is forwarded, but before the proxy slot is released.
@@ -55,6 +55,6 @@ public interface TestSessionListener {
    * WARNING : after session should NOT throw exception. If an exception is thrown, the resources
    * will NOT be released, as it could mean the remote is now corrupted.
    */
-  public void afterSession(TestSession session);
+  void afterSession(TestSession session);
 
 }

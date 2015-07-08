@@ -30,7 +30,6 @@ import org.openqa.grid.e2e.misc.GridSerializeExceptionTest;
 import org.openqa.grid.e2e.misc.HubRestart;
 import org.openqa.grid.e2e.misc.HubRestartNeg;
 import org.openqa.grid.e2e.misc.WebDriverPriorityDemo;
-import org.openqa.grid.e2e.node.BrowserTimeOutTest;
 import org.openqa.grid.e2e.node.CrashWhenStartingBrowserTest;
 import org.openqa.grid.e2e.node.DefaultProxyFindsFirefoxLocationsTest;
 import org.openqa.grid.e2e.node.DefaultProxyIsUnregisteredIfDownForTooLongTest;

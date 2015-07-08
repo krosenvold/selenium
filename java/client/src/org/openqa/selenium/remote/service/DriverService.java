@@ -158,7 +158,7 @@ public class DriverService {
       if (process != null) {
         return;
       }
-      process = new CommandLine(this.executable, args.toArray(new String[] {}));
+      process = new CommandLine(this.executable, args.toArray(new String[args.size()]));
       process.setEnvironmentVariables(environment);
       process.copyOutputTo(System.err);
       process.executeAsync();

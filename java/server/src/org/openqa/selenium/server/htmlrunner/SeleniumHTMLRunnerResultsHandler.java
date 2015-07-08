@@ -51,7 +51,7 @@ public class SeleniumHTMLRunnerResultsHandler implements HttpHandler {
   boolean started = false;
 
   public SeleniumHTMLRunnerResultsHandler() {
-    listeners = new Vector<HTMLResultsListener>();
+    listeners = new Vector<>();
   }
 
   public void addListener(HTMLResultsListener listener) {
@@ -108,7 +108,7 @@ public class SeleniumHTMLRunnerResultsHandler implements HttpHandler {
   }
 
   private List<String> createTestTables(HttpRequest request, int numTotalTests) {
-    List<String> testTables = new LinkedList<String>();
+    List<String> testTables = new LinkedList<>();
     for (int i = 1; i <= numTotalTests; i++) {
       String testTable = request.getParameter("testTable." + i);
       // System.out.println("table " + i);

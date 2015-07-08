@@ -108,11 +108,11 @@ public class SeleneseTestBase {
   protected int getDefaultPort() {
     try {
       Class<?> c = Class.forName("org.openqa.selenium.server.RemoteControlConfiguration");
-      Method getDefaultPort = c.getMethod("getDefaultPort", new Class[0]);
+      Method getDefaultPort = c.getMethod("getDefaultPort");
       Integer portNumber = (Integer) getDefaultPort.invoke(null);
-      return portNumber.intValue();
+      return portNumber;
     } catch (Exception e) {
-      return Integer.getInteger("selenium.port", 4444).intValue();
+      return Integer.getInteger("selenium.port", 4444);
     }
   }
 
@@ -171,7 +171,7 @@ public class SeleneseTestBase {
   /** Like assertEquals, but fails at the end of the test (during tearDown) */
   public void verifyEquals(boolean expected, boolean actual) {
     try {
-      assertEquals(Boolean.valueOf(expected), Boolean.valueOf(actual));
+      assertEquals(expected, actual);
     } catch (Error e) {
       verificationErrors.append(throwableToString(e));
     }
@@ -232,19 +232,19 @@ public class SeleneseTestBase {
     Boolean b;
     b = handleRegex("regexp:", expectedPattern, actual, 0);
     if (b != null) {
-      return b.booleanValue();
+      return b;
     }
     b = handleRegex("regex:", expectedPattern, actual, 0);
     if (b != null) {
-      return b.booleanValue();
+      return b;
     }
     b = handleRegex("regexpi:", expectedPattern, actual, Pattern.CASE_INSENSITIVE);
     if (b != null) {
-      return b.booleanValue();
+      return b;
     }
     b = handleRegex("regexi:", expectedPattern, actual, Pattern.CASE_INSENSITIVE);
     if (b != null) {
-      return b.booleanValue();
+      return b;
     }
 
     if (expectedPattern.startsWith("exact:")) {
@@ -336,9 +336,9 @@ public class SeleneseTestBase {
   }
 
   private static String stringArrayToString(String[] sa) {
-    StringBuffer sb = new StringBuffer("{");
-    for (int j = 0; j < sa.length; j++) {
-      sb.append(" ").append("\"").append(sa[j]).append("\"");
+    StringBuilder sb = new StringBuilder("{");
+    for (String aSa : sa) {
+      sb.append(" ").append("\"").append(aSa).append("\"");
     }
     sb.append(" }");
     return sb.toString();
@@ -352,7 +352,7 @@ public class SeleneseTestBase {
   }
 
   public static String join(String[] sa, char c) {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     for (int j = 0; j < sa.length; j++) {
       sb.append(sa[j]);
       if (j < sa.length - 1) {

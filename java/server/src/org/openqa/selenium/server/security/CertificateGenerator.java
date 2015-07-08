@@ -46,7 +46,6 @@ import org.openqa.selenium.io.IOUtils;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
@@ -149,11 +148,7 @@ public class CertificateGenerator {
           .getCertificate(holder);
 
       return new KeyAndCert(keypair.getPrivate(), cert);
-    } catch(GeneralSecurityException e) {
-      throw Throwables.propagate(e);
-    } catch (IOException e) {
-      throw Throwables.propagate(e);
-    } catch (OperatorCreationException e) {
+    } catch(GeneralSecurityException | OperatorCreationException | IOException e) {
       throw Throwables.propagate(e);
     }
   }
@@ -171,17 +166,7 @@ public class CertificateGenerator {
       PrivateKey caPrivateKey = (PrivateKey) keystore.getKey("signingCertPrivKey", SIGNING_PASSWORD);
 
       return new KeyAndCert(caPrivateKey, caCert);
-    } catch (KeyStoreException e) {
-      throw Throwables.propagate(e);
-    } catch (CertificateException e) {
-      throw Throwables.propagate(e);
-    } catch (UnrecoverableKeyException e) {
-      throw Throwables.propagate(e);
-    } catch (NoSuchAlgorithmException e) {
-      throw Throwables.propagate(e);
-    } catch (FileNotFoundException e) {
-      throw Throwables.propagate(e);
-    } catch (IOException e) {
+    } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException | CertificateException | IOException e) {
       throw Throwables.propagate(e);
     } finally {
       IOUtils.closeQuietly(is);

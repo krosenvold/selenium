@@ -47,7 +47,7 @@ public class RobotRetriever {
     if (robot != null) {
       return robot;
     }
-    robotRetriever = new FutureTask<Robot>(new Retriever());
+    robotRetriever = new FutureTask<>(new Retriever());
     log.info("Creating Robot");
     retrieverThread = new Thread(robotRetriever, "robotRetriever");  // Thread safety reviewed
     retrieverThread.start();

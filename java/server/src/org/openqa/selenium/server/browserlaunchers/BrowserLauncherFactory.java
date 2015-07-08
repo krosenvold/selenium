@@ -145,7 +145,7 @@ public class BrowserLauncherFactory {
   }
 
   public static String getSupportedBrowsersAsString() {
-    StringBuffer str = new StringBuffer("");
+    StringBuilder str = new StringBuilder("");
     for (String name : supportedBrowsers.keySet()) {
       str.append("  *").append(name).append('\n');
     }
@@ -154,7 +154,7 @@ public class BrowserLauncherFactory {
   }
 
   private RuntimeException browserNotSupported(String browser) {
-    StringBuffer errorMessage = new StringBuffer("Browser not supported: " + browser);
+    StringBuilder errorMessage = new StringBuilder("Browser not supported: " + browser);
     errorMessage.append('\n');
     if (!browser.startsWith("*")) {
       errorMessage.append("(Did you forget to add a *?)\n");

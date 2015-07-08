@@ -78,11 +78,9 @@ public class DisplayHelpServlet extends HttpServlet {
     builder.append("</body>");
     builder.append("</html>");
 
-    InputStream in = new ByteArrayInputStream(builder.toString().getBytes("UTF-8"));
-    try {
+    try (InputStream in = new ByteArrayInputStream(builder.toString().getBytes("UTF-8"))) {
       ByteStreams.copy(in, response.getOutputStream());
     } finally {
-      in.close();
       response.flushBuffer();
     }
   }

@@ -46,10 +46,7 @@ public class BuildInfo {
       File file = new File(url.toURI());
       jar = new JarFile(file);
       manifest = jar.getManifest();
-    } catch (NullPointerException ignored) {
-    } catch (URISyntaxException ignored) {
-    } catch (IOException ignored) {
-    } catch (IllegalArgumentException ignored) {
+    } catch (NullPointerException | IllegalArgumentException | IOException | URISyntaxException ignored) {
     } finally {
       if (jar != null) {
         try {

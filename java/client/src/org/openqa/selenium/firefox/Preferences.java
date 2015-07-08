@@ -100,7 +100,7 @@ class Preferences {
         String key = entry.getKey();
         Object value = entry.getValue();
         if (value instanceof Long) {
-          value = new Integer(((Long)value).intValue());
+          value = ((Long) value).intValue();
         }
         setPreference(key, value);
         immutablePrefs.put(key, value);
@@ -110,7 +110,7 @@ class Preferences {
       for (Map.Entry<String, Object> entry : mutable.entrySet()) {
         Object value = entry.getValue();
         if (value instanceof Long) {
-          value = new Integer(((Long)value).intValue());
+          value = ((Long) value).intValue();
         }
         setPreference(entry.getKey(), value);
       }

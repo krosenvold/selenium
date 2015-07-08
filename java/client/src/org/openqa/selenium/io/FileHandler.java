@@ -52,11 +52,8 @@ public class FileHandler {
     Zip zip = new Zip();
 
     for (String name : names) {
-      InputStream is = locateResource(forClassLoader, name);
-      try {
+      try (InputStream is = locateResource(forClassLoader, name)) {
         zip.unzipFile(outputDir, is, name);
-      } finally {
-        is.close();
       }
     }
   }

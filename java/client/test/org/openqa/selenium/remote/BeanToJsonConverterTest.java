@@ -511,14 +511,14 @@ public class BeanToJsonConverterTest {
     }
   }
 
-  public static enum State {
+  public enum State {
 
     GOOD,
     BAD,
     INDIFFERENT
   }
 
-  public static enum WithMethods {
+  public enum WithMethods {
 
     CHEESE() {
       @Override

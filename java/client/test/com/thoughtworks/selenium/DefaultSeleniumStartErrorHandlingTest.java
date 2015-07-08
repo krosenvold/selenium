@@ -35,9 +35,9 @@ public class DefaultSeleniumStartErrorHandlingTest {
       new DefaultSelenium(failOnStartCommandProcessor).start();
       fail("Did not catch RuntimeException as expected");
     } catch (RuntimeException expected) {
-      assertTrue(-1 != expected.getMessage().indexOf(
-          "Could not contact Selenium Server; have you started it on '' ?"));
-      assertTrue(-1 != expected.getMessage().indexOf("Connection refused: connect"));
+      assertTrue(expected.getMessage()
+                   .contains("Could not contact Selenium Server; have you started it on '' ?"));
+      assertTrue(expected.getMessage().contains("Connection refused: connect"));
     }
   }
 
@@ -52,8 +52,8 @@ public class DefaultSeleniumStartErrorHandlingTest {
       fail("Did not catch RuntimeException as expected");
     } catch (RuntimeException expected) {
       /* Catching RuntimeEception as expected */
-      assertTrue(-1 != expected.getMessage().indexOf("Could not start Selenium session: "));
-      assertTrue(-1 != expected.getMessage().indexOf("some crazy unexpected exception"));
+      assertTrue(expected.getMessage().contains("Could not start Selenium session: "));
+      assertTrue(expected.getMessage().contains("some crazy unexpected exception"));
     }
   }
 

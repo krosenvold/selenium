@@ -43,7 +43,7 @@ public class IOUtils {
   public static void closeQuietly(Closeable closeable) {
     try {
       Closeables.close(closeable, true);
-    } catch (IOException ignoted) {
+    } catch (IOException ignored) {
     }
   }
 }

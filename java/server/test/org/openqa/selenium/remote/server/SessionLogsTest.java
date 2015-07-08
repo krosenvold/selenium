@@ -110,14 +110,13 @@ public class SessionLogsTest extends JUnit4TestBase {
     HttpPost postCmd = new HttpPost(postRequest);
     HttpResponse response = client.execute(postCmd);
     HttpEntity entity = response.getEntity();
-    InputStreamReader reader = new InputStreamReader(entity.getContent(), Charsets.UTF_8);
-    try {
+    try (InputStreamReader reader = new InputStreamReader(entity.getContent(), Charsets.UTF_8)) {
       String str = CharStreams.toString(reader);
       return new JsonParser().parse(str).getAsJsonObject()
-          .get("value").getAsJsonObject();
+        .get("value").getAsJsonObject();
     } finally {
       EntityUtils.consume(entity);
-      reader.close();
+
     }
   }
 }

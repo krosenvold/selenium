@@ -164,38 +164,35 @@ public class GoogleChromeLauncher extends AbstractBrowserLauncher {
     String userDir = customProfileDir.getAbsolutePath();
 
     List<String> array = Lists.newArrayList(
-      new String[] {
-        browserInstallation.launcherFilePath(),
-        // Disable hang monitor dialogs in renderer process.
-        "--disable-hang-monitor",
-        // Disable metrics reporting system.
-        "--disable-metrics",
-        // Disable pop-up blocking.
-        "--disable-popup-blocking",
-        // Don't prompt when navigating to a page that was the result
-        // of a post.
-        "--disable-prompt-on-repost",
-        // Set the proxy server.
-        "--proxy-server=localhost:" + getPort(),
-        // Always start the window maximized. This is a poor man's
-        // replacement for windowMaximize (which does not work).
-        "--start-maximized",
-        // Makes sure that no first time run dialog boxes are shown
-        "--no-first-run",
-        // Make sure the browser window is activated when launched (Windows does this by default,
-        // but needed for Mac)
-        "--activate-on-launch",
-        // Don't ask to be the default browser
-        "--no-default-browser-check",
-        // Disable the "translate page" in-page toolbar from appearing
-        "--disable-translate",
-        // Don't enforce the same-origin policy
-        "--disable-web-security",
-        // Set the user data (i.e. profile) directory.
-        "--user-data-dir=" + userDir,
-        getUntrustedCertificatesFlag()
-      }
-    );
+      browserInstallation.launcherFilePath(),
+      // Disable hang monitor dialogs in renderer process.
+      "--disable-hang-monitor",
+      // Disable metrics reporting system.
+      "--disable-metrics",
+      // Disable pop-up blocking.
+      "--disable-popup-blocking",
+      // Don't prompt when navigating to a page that was the result
+      // of a post.
+      "--disable-prompt-on-repost",
+      // Set the proxy server.
+      "--proxy-server=localhost:" + getPort(),
+      // Always start the window maximized. This is a poor man's
+      // replacement for windowMaximize (which does not work).
+      "--start-maximized",
+      // Makes sure that no first time run dialog boxes are shown
+      "--no-first-run",
+      // Make sure the browser window is activated when launched (Windows does this by default,
+      // but needed for Mac)
+      "--activate-on-launch",
+      // Don't ask to be the default browser
+      "--no-default-browser-check",
+      // Disable the "translate page" in-page toolbar from appearing
+      "--disable-translate",
+      // Don't enforce the same-origin policy
+      "--disable-web-security",
+      // Set the user data (i.e. profile) directory.
+      "--user-data-dir=" + userDir,
+      getUntrustedCertificatesFlag());
     array.addAll(Lists.newArrayList(getCommandLineFlagsAsArray()));
     array.add(url);
 

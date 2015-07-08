@@ -177,11 +177,7 @@ public class SeleniumTestRunner extends BlockJUnit4ClassRunner {
       withRules.setAccessible(true);
 
       return (Statement) withRules.invoke(this, method, target, statement);
-    } catch (NoSuchMethodException e) {
-      throw Throwables.propagate(e);
-    } catch (InvocationTargetException e) {
-      throw Throwables.propagate(e);
-    } catch (IllegalAccessException e) {
+    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       throw Throwables.propagate(e);
     }
   }

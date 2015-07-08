@@ -39,7 +39,7 @@ class ExecutableFinder {
   private static final Method JDK6_CAN_EXECUTE = findJdk6CanExecuteMethod();
 
   private final ImmutableSet.Builder<String> pathSegmentBuilder =
-      new ImmutableSet.Builder<String>();
+    new ImmutableSet.Builder<>();
 
   /**
    * Find the executable by scanning the file system and the PATH. In the case of Windows this
@@ -106,10 +106,8 @@ class ExecutableFinder {
     if (JDK6_CAN_EXECUTE != null) {
       try {
         return (Boolean) JDK6_CAN_EXECUTE.invoke(file);
-      } catch (IllegalAccessException e) {
+      } catch (IllegalAccessException | InvocationTargetException e) {
         // Do nothing
-      } catch (InvocationTargetException e) {
-        // Still do nothing
       }
     }
     return true;

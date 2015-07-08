@@ -77,7 +77,7 @@ public class NoOpSessionLogHandler extends PerSessionLogHandler {
 
   @Override
   public ImmutableList<SessionId> getLoggedSessions() {
-    return ImmutableList.<SessionId>of();
+    return ImmutableList.of();
   }
 
   @Override

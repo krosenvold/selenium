@@ -58,7 +58,7 @@ public class WebProxyHtmlRendererBeta implements HtmlRenderer {
 
     builder.append("<p class='proxyid'>id : ");
     builder.append(proxy.getId());
-    builder.append(", OS : " + platform + "</p>");
+    builder.append(", OS : ").append(platform).append("</p>");
 
     builder.append(nodeTabs());
 
@@ -141,7 +141,7 @@ public class WebProxyHtmlRendererBeta implements HtmlRenderer {
       String version = cap.getVersion();
       builder.append("<p>");
       if (version != null) {
-        builder.append("v:" + version);
+        builder.append("v:").append(version);
       }
       for (TestSlot s : lines.getLine(cap)) {
         builder.append(getSingleSlotHtml(s, icon));

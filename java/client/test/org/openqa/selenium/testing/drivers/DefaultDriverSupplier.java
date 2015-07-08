@@ -59,11 +59,7 @@ public class DefaultDriverSupplier implements Supplier<WebDriver> {
     try {
       return driverClass.getConstructor(Capabilities.class, Capabilities.class).
           newInstance(desiredCapabilities, requiredCapabilities);
-    } catch (InstantiationException e) {
-      throw Throwables.propagate(e);
-    } catch (IllegalAccessException e) {
-      throw Throwables.propagate(e);
-    } catch (NoSuchMethodException e) {
+    } catch (InstantiationException | NoSuchMethodException | IllegalAccessException e) {
       throw Throwables.propagate(e);
     } catch (InvocationTargetException e) {
       throw Throwables.propagate(e.getTargetException());

@@ -69,7 +69,7 @@ public class SmokeTest {
   @Test(timeout = 10000)
   public void method() throws InterruptedException {
 
-    final List<TestSession> sessions = new CopyOnWriteArrayList<TestSession>();
+    final List<TestSession> sessions = new CopyOnWriteArrayList<>();
 
     for (int i = 0; i < MAX; i++) {
       new Thread(new Runnable() { // Thread safety reviewed

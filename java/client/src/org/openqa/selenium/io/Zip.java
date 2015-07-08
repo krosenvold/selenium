@@ -55,13 +55,10 @@ public class Zip {
   }
 
   public String zip(File inputDir) throws IOException {
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
-    try {
+    try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
       zip(inputDir, bos);
       return new Base64Encoder().encode(bos.toByteArray());
-    } finally {
-      bos.close();
     }
   }
 
@@ -69,13 +66,11 @@ public class Zip {
     checkArgument(fileToCompress.isFile(), "File should be a file: " + fileToCompress);
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(bos);
 
-    try {
+    try (ZipOutputStream zos = new ZipOutputStream(bos)) {
       addToZip(baseDir.getAbsolutePath(), zos, fileToCompress);
       return new Base64Encoder().encode(bos.toByteArray());
     } finally {
-      zos.close();
       bos.close();
     }
 
@@ -141,9 +136,8 @@ public class Zip {
   }
 
   public void unzip(InputStream source, File outputDir) throws IOException {
-    ZipInputStream zis = new ZipInputStream(source);
 
-    try {
+    try (ZipInputStream zis = new ZipInputStream(source)) {
       ZipEntry entry;
       while ((entry = zis.getNextEntry()) != null) {
         File file = new File(outputDir, entry.getName());
@@ -154,8 +148,6 @@ public class Zip {
 
         unzipFile(outputDir, zis, entry.getName());
       }
-    } finally {
-      zis.close();
     }
   }
 
@@ -166,15 +158,12 @@ public class Zip {
     if (!FileHandler.createDir(toWrite.getParentFile()))
       throw new IOException("Cannot create parent director for: " + name);
 
-    OutputStream out = new BufferedOutputStream(new FileOutputStream(toWrite), BUF_SIZE);
-    try {
+    try (OutputStream out = new BufferedOutputStream(new FileOutputStream(toWrite), BUF_SIZE)) {
       byte[] buffer = new byte[BUF_SIZE];
       int read;
       while ((read = zipStream.read(buffer)) != -1) {
         out.write(buffer, 0, read);
       }
-    } finally {
-      out.close();
     }
   }
 }

@@ -115,11 +115,12 @@ public class FirefoxLocator extends SingleBrowserLocator {
   }
 
   protected String[] firefoxDefaultLocationsOnWindows() {
-    return new ImmutableList.Builder<String>()
-        .addAll(WindowsUtils.getPathsInProgramFiles("\\Firefox-3"))
-        .addAll(WindowsUtils.getPathsInProgramFiles("\\Mozilla Firefox"))
-        .addAll(WindowsUtils.getPathsInProgramFiles("\\Firefox"))
-        .build().toArray(new String[0]);
+    ImmutableList<String> var = new ImmutableList.Builder<String>()
+      .addAll(WindowsUtils.getPathsInProgramFiles("\\Firefox-3"))
+      .addAll(WindowsUtils.getPathsInProgramFiles("\\Mozilla Firefox"))
+      .addAll(WindowsUtils.getPathsInProgramFiles("\\Firefox"))
+      .build();
+    return var.toArray(new String[var.size()]);
   }
 
   protected boolean runningOnWindows() {

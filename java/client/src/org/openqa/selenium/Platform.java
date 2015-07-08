@@ -155,7 +155,7 @@ public enum Platform {
   private final int minorVersion;
   private final int majorVersion;
 
-  private Platform(String... partOfOsName) {
+  Platform(String... partOfOsName) {
     this.partOfOsName = partOfOsName;
 
     String version = System.getProperty("os.version", "0.0.0");

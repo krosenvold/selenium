@@ -23,7 +23,6 @@ import org.openqa.selenium.NeedsFreshDriver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Action;
-import org.openqa.selenium.testing.Ignore;
 
 import static org.junit.Assert.assertTrue;
 

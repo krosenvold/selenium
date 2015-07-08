@@ -51,10 +51,10 @@ public class DoNotUseProxyPac implements Serializable {
       Pattern.compile("[\\w\\*\\?:/\\.-]*");
 
   // Make an effort to preserve the ordering the user asked for.
-  private final Set<String> directUrls = new LinkedHashSet<String>();
+  private final Set<String> directUrls = new LinkedHashSet<>();
   private final Map<String, String> proxiedUrls = new HashMap<>();
   private final Map<String, String> proxiedRegexUrls = new HashMap<>();
-  private final Set<String> directHosts = new LinkedHashSet<String>();
+  private final Set<String> directHosts = new LinkedHashSet<>();
   private final Map<String, String> proxiedHosts = new HashMap<>();
   // TODO(simon): Is this right? Really?
   private String defaultProxy = ""; // Does nothing. Emulates old behaviour of Selenium

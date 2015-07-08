@@ -111,7 +111,7 @@ public class DefaultRemoteProxy extends BaseRemoteProxy
   private volatile boolean poll = true;
 
   // TODO freynaud
-  private List<RemoteException> errors = new CopyOnWriteArrayList<RemoteException>();
+  private List<RemoteException> errors = new CopyOnWriteArrayList<>();
   private Thread pollingThread = null;
 
   public boolean isAlive() {

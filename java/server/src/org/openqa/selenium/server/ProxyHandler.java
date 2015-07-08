@@ -81,7 +81,7 @@ public class ProxyHandler extends AbstractHttpHandler {
   protected Set<String> _proxyHostsBlackList;
   protected int _tunnelTimeoutMs = 250;
   private transient boolean _chained = false;
-  private final Map<String, SslRelay> _sslMap = new LinkedHashMap<String, SslRelay>();
+  private final Map<String, SslRelay> _sslMap = new LinkedHashMap<>();
   @SuppressWarnings("unused")
   private String sslKeystorePath;
   private boolean trustAllSSLCertificates = false;

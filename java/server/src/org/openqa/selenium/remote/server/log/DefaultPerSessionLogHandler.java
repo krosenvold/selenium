@@ -77,12 +77,12 @@ public class DefaultPerSessionLogHandler extends PerSessionLogHandler {
     this.capacity = capacity;
     this.formatter = formatter;
     this.storeLogsOnSessionQuit = captureLogsOnQuit;
-    this.perSessionRecords = Maps.<SessionId, List<LogRecord>>newHashMap();
-    this.perThreadTempRecords = Maps.<ThreadKey, List<LogRecord>>newHashMap();
-    this.threadToSessionMap = Maps.<ThreadKey, SessionId>newHashMap();
-    this.sessionToThreadMap = Maps.<SessionId, ThreadKey>newHashMap();
+    this.perSessionRecords = Maps.newHashMap();
+    this.perThreadTempRecords = Maps.newHashMap();
+    this.threadToSessionMap = Maps.newHashMap();
+    this.sessionToThreadMap = Maps.newHashMap();
     this.logFileRepository = new SessionLogsToFileRepository();
-    this.perSessionDriverEntries = Maps.<SessionId, Map<String, LogEntries>>newHashMap();
+    this.perSessionDriverEntries = Maps.newHashMap();
   }
 
   @Override
@@ -253,7 +253,7 @@ public class DefaultPerSessionLogHandler extends PerSessionLogHandler {
    */
   @Override
   public synchronized LogEntries getSessionLog(SessionId sessionId) throws IOException {
-    List<LogEntry> entries = Lists.<LogEntry>newLinkedList();
+    List<LogEntry> entries = Lists.newLinkedList();
     LogRecord[] records = records(sessionId);
     if (records != null) {
       for (LogRecord record : records) {
@@ -276,7 +276,7 @@ public class DefaultPerSessionLogHandler extends PerSessionLogHandler {
   public synchronized List<SessionId> getLoggedSessions() {
     // TODO: Find a solution that can handle large numbers of sessions, maybe by
     // reading them from disc.
-    ImmutableList.Builder<SessionId> builder = new ImmutableList.Builder<SessionId>();
+    ImmutableList.Builder<SessionId> builder = new ImmutableList.Builder<>();
     builder.addAll(perSessionDriverEntries.keySet());
     return builder.build();
   }

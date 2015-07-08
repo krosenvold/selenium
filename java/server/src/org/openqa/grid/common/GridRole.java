@@ -19,8 +19,6 @@ package org.openqa.grid.common;
 
 import com.google.common.collect.ImmutableList;
 
-import org.openqa.grid.common.exception.GridConfigurationException;
-
 import java.util.List;
 
 public enum GridRole {
